@@ -1,0 +1,87 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdk 33
+
+//    lintOptions {
+//        checkReleaseBuilds false
+//        // Or, if you prefer, you can continue to check for errors in release builds,
+//        // but continue the build even when errors are found:
+//        abortOnError false
+//    }
+
+    defaultConfig {
+        applicationId "com.cw.vidopal"
+        minSdkVersion 19
+        targetSdkVersion 33
+        multiDexEnabled true
+        //noinspection AccidentalOctal
+        versionCode 00001
+        versionName "0.00.01"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+//            shrinkResources true
+//            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+              // mark: With initial tables: 2 folders, 1 page each folder
+              // un-mark: With default content by assets XML file
+              // Note: Apk file size will increase if assets directory is set at default location (app/src/main/assets)
+            assets.srcDirs = ['preferred/assets/']
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/DEPENDENCIES']
+        }
+    }
+
+    buildToolsVersion '33.0.0 rc1'
+
+    //https://stackoverflow.com/questions/44342455/more-than-one-file-was-found-with-os-independent-path-meta-inf-license
+//    packagingOptions {
+//        exclude 'META-INF/DEPENDENCIES'
+//    }
+
+    configurations.all {
+        resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.1'
+    }
+}
+
+dependencies {
+    implementation 'androidx.multidex:multidex:2.0.1'
+    //    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation files('libs/commons-io-2.4.jar')
+    implementation files('libs/universal-image-loader-1.9.5.jar')
+    implementation files('libs/YouTubeAndroidPlayerApi.jar')
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.legacy:legacy-support-v13:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.google.android.material:material:1.9.0-alpha02'
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+
+    // if ENABLE_ADMOB = true, enable the following
+//    implementation 'androidx.annotation:annotation:1.5.0'
+    //implementation 'com.google.android.gms:play-services-ads:21.4.0'
+
+    // for ExoPlayer
+    implementation 'com.google.android.exoplayer:exoplayer:2.18.4'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.4'
+//    implementation 'com.google.android.exoplayer:exoplayer-dash:2.18.4'
+//    implementation 'com.google.android.exoplayer:exoplayer-hls:2.18.4'
+//    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.18.4'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.4'
+}

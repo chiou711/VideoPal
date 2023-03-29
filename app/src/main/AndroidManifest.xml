@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.cw.videopal"
+    >
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+	<uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+
+
+	<uses-permission android:name="android.permission.WAKE_LOCK" />	
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="com.google.android.apps.photos.permission.GOOGLE_PHOTOS"/>
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+<!--    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"-->
+<!--        tools:ignore="ScopedStorage" />-->
+
+	<uses-feature android:name="android.hardware.camera"
+	    		  android:required="false"/>
+	<uses-feature android:name="android.hardware.camera.autofocus"
+                  android:required="false"/>
+    <uses-feature android:name="android.hardware.telephony"
+                  android:required="false"/>
+
+    <application
+        android:name="com.cw.videopal.util.uil.UilApplication"
+        android:allowBackup="true"
+		android:largeHeap="true"        
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning"
+        android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true"
+        >
+
+        <!-- android:theme="@style/Theme.AppCompat" -->
+        <!-- android:theme="@style/CustomTheme" -->
+        <activity
+            android:name="com.cw.videopal.main.MainAct"
+            android:theme="@style/MyTheme"
+            android:launchMode="singleTop"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
+            android:label="@string/app_name"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+	   		<intent-filter>
+			   <action android:name="android.intent.action.SEND" />
+			   <category android:name="android.intent.category.DEFAULT" />
+			   <data android:mimeType="text/*" />
+			</intent-filter>
+            <intent-filter android:priority="0">
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="com.cw.videopal.note_add.image.Note_addCameraImage"/>
+        <activity android:name="com.cw.videopal.note_add.image.Note_addReadyImage"
+                  android:theme="@style/MyTheme"/>
+        <activity android:name="com.cw.videopal.note_add.video.Note_addCameraVideo"/>
+        <activity android:name="com.cw.videopal.note_add.video.Note_addReadyVideo"/>
+        <activity android:name="com.cw.videopal.note_add.drawing.Note_drawingAct" />
+        <activity android:name="com.cw.videopal.note_edit.Note_edit"
+                  android:windowSoftInputMode="adjustPan"/>
+        <activity android:name="com.cw.videopal.note.Note"
+                  android:theme="@style/MyTheme"
+            	  android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
+            android:exported="true">
+            <intent-filter android:priority="0">
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.cw.videopal.note_add.pictureUri.Note_addPictureUri"
+            android:theme="@style/MyTheme"
+            android:windowSoftInputMode="adjustPan"
+            android:parentActivityName="com.cw.videopal.main.MainAct">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.cw.videopal.main.MainAct" />
+        </activity>
+        <!-- note: add orientation above, when doing Rotate, activity will not go through the following states:
+             onPause/onSaveInstanceState/onStop/onDestroy/
+                                                onCreate/onStart/onRestoreInstanceState/onResume    -->
+
+        <activity android:name="com.cw.videopal.operation.gallery.LocalGalleryGridAct"/>
+        <activity android:name="com.cw.videopal.operation.gallery.LocalGalleryPagerAct"/>
+      	<activity android:name="com.cw.videopal.operation.slideshow.SlideshowPlayer"
+                  android:theme="@android:style/Theme.NoTitleBar"/>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.cw.videopal.MailNotes"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths" />
+        </provider>
+
+        <!--receiver-->
+        <receiver
+            android:name="com.cw.videopal.util.DeleteFileAlarmReceiver"
+            android:enabled="true" />
+
+<!--        <meta-data-->
+<!--            android:name="com.google.android.gms.ads.APPLICATION_ID"-->
+<!--            android:value="@string/ad_mob_app_id"/>-->
+
+<!--            <meta-data-->
+<!--                android:name="com.google.android.gms.ads.APPLICATION_ID"-->
+<!--                android:value="@string/ad_mob_app_id_test"/>-->
+
+<!--        <meta-data-->
+<!--            android:name="com.google.android.gms.ads.AD_MANAGER_APP"-->
+<!--            android:value="true"/>-->
+           </application>
+
+        </manifest>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VideoPal>
+
+    <folder>
+        <folder_name>Sample</folder_name>
+
+    <page>
+        <page_name>Google Video</page_name>
+        <note>
+            <title>[s]google video file</title>
+            <picture>https://drive.google.com/file/d/1CP6W_yBo4e_eEUXDMJSCAdE_wIi4o_14/view?usp=share_link</picture>
+        </note>
+        <note>
+            <title>[s]津津有味</title>
+            <picture>https://drive.google.com/file/d/1dHr-bKof_sXso2AaE4iLPRI1cfsW7c4n/view?usp=share_link</picture>
+        </note>
+        <note>
+            <title>[s]doggy叫我倒垃圾</title>
+            <picture>https://drive.google.com/file/d/19rrqsOR4iZPZRzahHcbQgCLdmWtx8_4A/view?usp=share_link</picture>
+        </note>
+    </page>
+
+    <page>
+        <page_name>Photo</page_name>
+        <note>
+            <title>[n]local image file</title>
+            <picture>file:///storage/emulated/0/Android/data/com.cw.videopal/files/Documents/local.jpg</picture>
+        </note>
+    </page>
+
+    <page>
+    <page_name>Local Video</page_name>
+        <note>
+            <title>[s]local video file</title>
+            <picture>file:///storage/emulated/0/Android/data/com.cw.video
+                pal/files/Documents/local.mp4</picture>
+        </note>
+    </page>
+
+    </folder>
+
+</VideoPal>
