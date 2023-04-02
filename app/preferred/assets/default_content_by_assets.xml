@@ -32,8 +32,7 @@
     <page_name>Local Video</page_name>
         <note>
             <title>[s]local video file</title>
-            <picture>file:///storage/emulated/0/Android/data/com.cw.video
-                pal/files/Documents/local.mp4</picture>
+            <picture>file:///storage/emulated/0/Android/data/com.cw.videopal/files/Documents/local.mp4</picture>
         </note>
     </page>
 

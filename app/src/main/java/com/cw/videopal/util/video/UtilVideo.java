@@ -16,29 +16,15 @@
 
 package com.cw.videopal.util.video;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Locale;
-
-import com.cw.videopal.R;
-import com.cw.videopal.note.NoteUi;
-import com.cw.videopal.util.image.UtilImage;
-import com.cw.videopal.util.Util;
-import com.google.android.exoplayer2.ExoPlayer;
-
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
-import android.media.ThumbnailUtils;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaPlayer.OnSeekCompleteListener;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -47,6 +33,20 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.ProgressBar;
+
+import com.cw.videopal.R;
+import com.cw.videopal.note.NoteUi;
+import com.cw.videopal.util.Util;
+import com.cw.videopal.util.image.UtilImage;
+import com.google.android.exoplayer2.Player;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Locale;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
@@ -344,7 +344,7 @@ public class UtilVideo
 	}
 	
 	public static VideoPlayer mVideoPlayer; //todo Memory leak?
-	public static ExoPlayer exoPlayer;
+	public static Player exoPlayer;
 
 	// Play or Pause video
 	public static void playOrPauseVideo(ViewPager pager,String picString)
@@ -460,7 +460,7 @@ public class UtilVideo
 		    	hasVideo = true;
     	}
 		else
-			return hasVideo;
+			return false;
     	
     	if(!hasVideo)
     	{
@@ -535,7 +535,7 @@ public class UtilVideo
 
 	// stop ExoPlayer
 	public static void stopExoPlayer(){
-		if(exoPlayer.isPlaying())
+		if( exoPlayer!=null && exoPlayer.isPlaying())
 			exoPlayer.stop();
 	}
 }

@@ -16,26 +16,6 @@
 
 package com.cw.videopal.note;
 
-import com.cw.videopal.R;
-import com.cw.videopal.db.DB_page;
-import com.cw.videopal.tabs.TabsHost;
-import com.cw.videopal.util.uil.UilCommon;
-import com.cw.videopal.util.image.TouchImageView;
-import com.cw.videopal.util.image.UtilImage;
-import com.cw.videopal.util.image.UtilImage_bitmapLoader;
-import com.cw.videopal.util.video.UtilVideo;
-import com.cw.videopal.util.video.VideoViewCustom;
-import com.cw.videopal.util.ColorSet;
-import com.cw.videopal.util.Util;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.ui.StyledPlayerView;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
@@ -47,7 +27,24 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.VideoView;
 
+import com.cw.videopal.R;
+import com.cw.videopal.db.DB_page;
+import com.cw.videopal.tabs.TabsHost;
+import com.cw.videopal.util.ColorSet;
+import com.cw.videopal.util.Util;
+import com.cw.videopal.util.image.TouchImageView;
+import com.cw.videopal.util.image.UtilImage_bitmapLoader;
+import com.cw.videopal.util.uil.UilCommon;
+import com.cw.videopal.util.video.UtilVideo;
+import com.cw.videopal.util.video.VideoViewCustom;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.ui.StyledPlayerView;
+import com.google.android.exoplayer2.util.MimeTypes;
+import com.google.android.gms.cast.framework.CastContext;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -59,8 +56,13 @@ public class Note_adapter extends FragmentStatePagerAdapter
 	private AppCompatActivity act;
 	private ViewPager pager;
 	DB_page db_page;
+	CastContext castContext;
+	PlayerManager playerManager;
+	PlayerManager.Listener listener;
 
-    public Note_adapter(ViewPager viewPager, AppCompatActivity activity)
+
+    public Note_adapter(ViewPager viewPager, AppCompatActivity activity,CastContext _castContext,
+		    PlayerManager _playerManager,PlayerManager.Listener _listener)
     {
     	super(activity.getSupportFragmentManager());
 		pager = viewPager;
@@ -69,6 +71,10 @@ public class Note_adapter extends FragmentStatePagerAdapter
         mLastPosition = -1;
 	    db_page = new DB_page(act, TabsHost.getCurrentPageTableId());
         System.out.println("Note_adapter / constructor / mLastPosition = " + mLastPosition);
+
+	    castContext = _castContext;
+	    playerManager = _playerManager;
+		listener = _listener;
     }
     
 	@Override
@@ -121,7 +127,6 @@ public class Note_adapter extends FragmentStatePagerAdapter
         textGroup.setContentDescription(act.getResources().getString(R.string.note_text));
 		textView.getRootView().setContentDescription(act.getResources().getString(R.string.note_text));
 
-
         String strTitle = db_page.getNoteTitle(position,true);
 		String videoUri = db_page.getNotePictureUri(position,true);
 
@@ -132,10 +137,10 @@ public class Note_adapter extends FragmentStatePagerAdapter
 			System.out.println("Note_adapter / _instantiateItem / isPictureMode ");
 	  		pictureGroup.setVisibility(View.VISIBLE);
 
-		    if(videoUri.contains("drive.google")){
+//		    if(videoUri.contains("drive.google")){
 				showExoPlayerView(imageView,videoView,exoplayer_view);
-	        } else
-	  	        showPictureView(position,imageView,videoView,exoplayer_view,spinner);
+//	        } else
+//	  	        showPictureView(position,imageView,videoView,exoplayer_view,spinner);
 
 	  	    line_view.setVisibility(View.GONE);
 	  	    textGroup.setVisibility(View.GONE);
@@ -162,10 +167,10 @@ public class Note_adapter extends FragmentStatePagerAdapter
 			// picture
 			pictureGroup.setVisibility(View.VISIBLE);
 
-		    if(videoUri.contains("drive.google")){
+//		    if(videoUri.contains("drive.google")){
 			    showExoPlayerView(imageView,videoView,exoplayer_view);
-		    } else
-	  	        showPictureView(position,imageView,videoView,exoplayer_view,spinner);
+//		    } else
+//	  	        showPictureView(position,imageView,videoView,exoplayer_view,spinner);
 
 	  	    line_view.setVisibility(View.VISIBLE);
 	  	    textGroup.setVisibility(View.VISIBLE);
@@ -224,20 +229,21 @@ public class Note_adapter extends FragmentStatePagerAdapter
     		             ProgressBar spinner          )
     {
 		String pictureUri = db_page.getNotePictureUri(position,true);
-        // show image view
-  		if( UtilImage.hasImageExtension(pictureUri, act)||
-			pictureUri.contains("drive.google")||
-  		    (Util.isEmptyString(pictureUri)   )             ) // for wrong path icon
-  		{
-			System.out.println("Note_adapter / _showPictureView / show image view");
-  			videoView.setVisibility(View.GONE);
-  			UtilVideo.mVideoView = null;
-  			imageView.setVisibility(View.VISIBLE);
-		    exoPlayerVideoView.setVisibility(View.GONE);
-  			showImageByTouchImageView(spinner, imageView, pictureUri,position);
-  		}
+//        // show image view
+//  		if( UtilImage.hasImageExtension(pictureUri, act)||
+//			pictureUri.contains("drive.google")||
+//  		    (Util.isEmptyString(pictureUri)   )             ) // for wrong path icon
+//  		{
+//			System.out.println("Note_adapter / _showPictureView / show image view");
+//  			videoView.setVisibility(View.GONE);
+//  			UtilVideo.mVideoView = null;
+//  			imageView.setVisibility(View.VISIBLE);
+//		    exoPlayerVideoView.setVisibility(View.GONE);
+//  			showImageByTouchImageView(spinner, imageView, pictureUri,position);
+//  		}
   		// show video view
-  		else if(UtilVideo.hasVideoExtension(pictureUri, act)){
+//  		else
+			  if(UtilVideo.hasVideoExtension(pictureUri, act)){
 			System.out.println("Note_adapter / _showPictureView / show video view");
   			imageView.setVisibility(View.GONE);
   			videoView.setVisibility(View.VISIBLE);
@@ -288,6 +294,7 @@ public class Note_adapter extends FragmentStatePagerAdapter
 //				lastPictureStr = db_page.getNotePictureUri(mLastPosition,true);
 
 			String pictureStr = db_page.getNotePictureUri(position,true);
+			System.out.println("Note_adapter / _setPrimaryItem / pictureStr = " + pictureStr);
 
 			// for video view
 			if (!Note.isTextMode() ){
@@ -299,81 +306,192 @@ public class Note_adapter extends FragmentStatePagerAdapter
 				}
 
                 // Show picture view UI
-				if (Note.isViewAllMode() || Note.isPictureMode() ){
-					NoteUi.cancel_UI_callbacks();
-					picUI_primary = new NoteUi(act, pager, position);
-					picUI_primary.tempShow_picViewUI(5002, pictureStr);
-                }
+//				if (Note.isViewAllMode() || Note.isPictureMode() ){
+//					NoteUi.cancel_UI_callbacks();
+//					picUI_primary = new NoteUi(act, pager, position);
+//					picUI_primary.tempShow_picViewUI(5002, pictureStr);
+//                }
 
 				// Set video view
-				if ( UtilVideo.hasVideoExtension(pictureStr, act) &&
-					 !UtilImage.hasImageExtension(pictureStr, act)   ){
-					// update current pager view
-					UtilVideo.mCurrentPagerView = (View) object;
+//				if ( (pictureStr, act) &&
+//					 !UtilImage.hasImageEUtilVideo.hasVideoExtensionxtension(pictureStr, act)   ){
+//					// update current pager view
+//					UtilVideo.mCurrentPagerView = (View) object;
+//
+//					// for view mode change
+//					if (Note.mIsViewModeChanged && (Note.mPlayVideoPositionOfInstance == 0) ){
+//						UtilVideo.mPlayVideoPosition = Note.mPositionOfChangeView;
+//						UtilVideo.setVideoViewLayout(pictureStr);
+//
+//						if (UtilVideo.mPlayVideoPosition > 0)
+//							UtilVideo.playOrPauseVideo(pager,pictureStr);
+//					}else{
+//						// for key protect
+//						if (Note.mPlayVideoPositionOfInstance > 0)
+//						{
+//							UtilVideo.setVideoState(UtilVideo.VIDEO_AT_PAUSE);
+//							UtilVideo.setVideoViewLayout(pictureStr);
+//
+//							if (!UtilVideo.hasMediaControlWidget) {
+//								NoteUi.updateVideoPlayButtonState(pager, NoteUi.getFocus_notePos());
+//								picUI_primary.tempShow_picViewUI(5003,pictureStr);
+//                            }
+//
+//							UtilVideo.playOrPauseVideo(pager,pictureStr);
+//						}else{
+//							if (UtilVideo.hasMediaControlWidget)
+//								UtilVideo.setVideoState(UtilVideo.VIDEO_AT_PLAY);
+//							else
+//								UtilVideo.setVideoState(UtilVideo.VIDEO_AT_STOP);
+//
+//							UtilVideo.mPlayVideoPosition = 0; // make sure play video position is 0 after page is changed
+//							UtilVideo.initVideoView(pager,pictureStr, act, position);
+//						}
+//					}
+//
+//
+//					UtilVideo.currentPicturePath = pictureStr;
+//				}
 
-					// for view mode change
-					if (Note.mIsViewModeChanged && (Note.mPlayVideoPositionOfInstance == 0) ){
-						UtilVideo.mPlayVideoPosition = Note.mPositionOfChangeView;
-						UtilVideo.setVideoViewLayout(pictureStr);
+				//todo Move to Note_adapter?
+//				if (castContext == null) {
+//					// There is no Cast context to work with. Do nothing.
+//					return;
+//				}
+				StyledPlayerView exoplayer_view = (StyledPlayerView) ((View)object).findViewById(R.id.exoplayer_view);
 
-						if (UtilVideo.mPlayVideoPosition > 0)
-							UtilVideo.playOrPauseVideo(pager,pictureStr);
-					}else{
-						// for key protect
-						if (Note.mPlayVideoPositionOfInstance > 0)
-						{
-							UtilVideo.setVideoState(UtilVideo.VIDEO_AT_PAUSE);
-							UtilVideo.setVideoViewLayout(pictureStr);
-
-							if (!UtilVideo.hasMediaControlWidget) {
-								NoteUi.updateVideoPlayButtonState(pager, NoteUi.getFocus_notePos());
-								picUI_primary.tempShow_picViewUI(5003,pictureStr);
-                            }
-
-							UtilVideo.playOrPauseVideo(pager,pictureStr);
-						}else{
-							if (UtilVideo.hasMediaControlWidget)
-								UtilVideo.setVideoState(UtilVideo.VIDEO_AT_PLAY);
-							else
-								UtilVideo.setVideoState(UtilVideo.VIDEO_AT_STOP);
-
-							UtilVideo.mPlayVideoPosition = 0; // make sure play video position is 0 after page is changed
-							UtilVideo.initVideoView(pager,pictureStr, act, position);
-						}
-					}
-
-
-					UtilVideo.currentPicturePath = pictureStr;
-				}
+//		mediaQueueList.setAdapter(mediaQueueListAdapter);
 
 				// set ExoPlayer for exoplayer view
-				if(pictureStr.contains("drive.google")) {
-					UtilVideo.mCurrentPagerView = (View) object;
-					UtilVideo.exoPlayer = new ExoPlayer.Builder(act).build();
-					StyledPlayerView exoplayer_view = ((StyledPlayerView) UtilVideo.mCurrentPagerView.findViewById(R.id.exoplayer_view));
-					try {
-						Uri videoUri= Uri.parse(Util.getTransformedPath(pictureStr));
-						DefaultHttpDataSource.Factory dataSourceFactory=new DefaultHttpDataSource.Factory();
-						ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-						MediaSource mediaSource = new ProgressiveMediaSource
-								.Factory(dataSourceFactory,extractorsFactory)
-								.createMediaSource(MediaItem.fromUri(videoUri));
+				if(pictureStr.contains("http"))
+					httpExoPlayer(exoplayer_view,pictureStr);
+				else
+					localExoPlayer(exoplayer_view,pictureStr);
+				// apply player manager
+//					localExoPlayer2(exoplayer_view,pictureStr);
 
-						exoplayer_view.setPlayer(UtilVideo.exoPlayer);
-						UtilVideo.exoPlayer.setMediaSource(mediaSource);
-						UtilVideo.exoPlayer.prepare();
-						//UtilVideo.exoPlayer.setPlayWhenReady(true);
-					}catch (Exception e){
-						e.printStackTrace();
-					}
-				}
+//				if(pictureStr.contains("drive.google"))
+//				{
+//					UtilVideo.mCurrentPagerView = (View) object;
+//					UtilVideo.exoPlayer = new ExoPlayer.Builder(act).build();
+//					StyledPlayerView exoplayer_view = ((StyledPlayerView) UtilVideo.mCurrentPagerView.findViewById(R.id.exoplayer_view));
+//					try {
+//						Uri videoUri= Uri.parse(Util.getTransformedPath(pictureStr));
+//						DefaultHttpDataSource.Factory dataSourceFactory=new DefaultHttpDataSource.Factory();
+//						ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+//						MediaSource mediaSource = new ProgressiveMediaSource
+//								.Factory(dataSourceFactory,extractorsFactory)
+//								.createMediaSource(MediaItem.fromUri(videoUri));
+//
+//						exoplayer_view.setPlayer(UtilVideo.exoPlayer);
+//						UtilVideo.exoPlayer.setMediaSource(mediaSource);
+//						UtilVideo.exoPlayer.prepare();
+//						System.out.println("------------ videoUri = " + videoUri);
+//						//UtilVideo.exoPlayer.setPlayWhenReady(true);
+//					}catch (Exception e){
+//						e.printStackTrace();
+//					}
+//				}
 
 			}
 
 		}
 	    mLastPosition = position;
 	    
-	} //setPrimaryItem		
+	} //setPrimaryItem
+
+	// local ExoPlayer
+	void localExoPlayer(StyledPlayerView object,String pictureStr){
+
+		if(pictureStr.contains("file://"))
+			pictureStr = pictureStr.replace("file://","");
+		else if(pictureStr.startsWith("content"))
+			pictureStr = Util.getLocalRealPathByUri(act,Uri.parse(pictureStr));
+
+		UtilVideo.mCurrentPagerView = (View) object;
+
+		UtilVideo.exoPlayer = new ExoPlayer.Builder(act).build();
+		StyledPlayerView exoplayer_view = ((StyledPlayerView) UtilVideo.mCurrentPagerView.findViewById(R.id.exoplayer_view));
+		exoplayer_view.setControllerShowTimeoutMs(0);
+		exoplayer_view.showController();
+		exoplayer_view.setDefaultArtwork(
+				ResourcesCompat.getDrawable(
+						act.getResources(),
+						R.drawable.ic_baseline_cast_connected_400,
+						/* theme= */ null));
+
+		try {
+
+//			MediaSource mediaSource = new ProgressiveMediaSource.Factory(new FileDataSource.Factory())
+//					.createMediaSource(MediaItem.fromUri(Uri.parse(pictureStr)));
+//			UtilVideo.exoPlayer.setMediaSource(mediaSource);
+
+			///
+		    MediaItem mediaItem = new MediaItem.Builder()
+		            .setUri(Uri.parse(pictureStr))
+		            .setMimeType(MimeTypes.VIDEO_MP4V)
+		            .build();
+			UtilVideo.exoPlayer.setMediaItem(mediaItem);
+			///
+
+			exoplayer_view.setPlayer(UtilVideo.exoPlayer);
+			UtilVideo.exoPlayer.prepare();
+			System.out.println("------------ Uri.parse(pictureStr) = " + Uri.parse(pictureStr));
+			//UtilVideo.exoPlayer.setPlayWhenReady(true);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	// local ExoPlayer 2 (player manager)
+	void localExoPlayer2(StyledPlayerView object,String pictureStr){
+
+		if(pictureStr.contains("file://"))
+			pictureStr = pictureStr.replace("file://","");
+		else if(pictureStr.startsWith("content") )
+			pictureStr = Util.getLocalRealPathByUri(act,Uri.parse(pictureStr));
+
+		System.out.println("---------- pictureStr = " + pictureStr);
+
+		UtilVideo.mCurrentPagerView = (View) object;
+		StyledPlayerView exoplayer_view = ((StyledPlayerView) UtilVideo.mCurrentPagerView.findViewById(R.id.exoplayer_view));
+
+		// player inside player manager
+		playerManager = new PlayerManager(act,listener,exoplayer_view,castContext,pictureStr);
+	}
+
+	// http ExoPlayer
+	void httpExoPlayer(StyledPlayerView object,String pictureStr){
+		UtilVideo.mCurrentPagerView = object;
+		UtilVideo.exoPlayer = new ExoPlayer.Builder(act).build();
+		StyledPlayerView exoplayer_view = ((StyledPlayerView) UtilVideo.mCurrentPagerView.findViewById(R.id.exoplayer_view));
+		try {
+			Uri videoUri= Uri.parse(Util.getTransformedPath(pictureStr));
+
+//			DefaultHttpDataSource.Factory dataSourceFactory=new DefaultHttpDataSource.Factory();
+//			ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+//			MediaSource mediaSource = new ProgressiveMediaSource
+//					.Factory(dataSourceFactory,extractorsFactory)
+//					.createMediaSource(MediaItem.fromUri(videoUri));
+//			UtilVideo.exoPlayer.setMediaSource(mediaSource);
+
+			///
+            MediaItem mediaItem = new MediaItem.Builder()
+							            .setUri(videoUri)
+							            .setMimeType(MimeTypes.VIDEO_MP4V)
+							            .build();
+			UtilVideo.exoPlayer.setMediaItem(mediaItem);
+			///
+
+			exoplayer_view.setPlayer(UtilVideo.exoPlayer);
+
+			UtilVideo.exoPlayer.prepare();
+			System.out.println("------------ videoUri = " + videoUri);
+			//UtilVideo.exoPlayer.setPlayWhenReady(true);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+	}
 
     // show image by touch image view
     private void showImageByTouchImageView(final ProgressBar spinner, final TouchImageView pictureView, String strPicture,final Integer position)

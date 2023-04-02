@@ -16,23 +16,6 @@
 
 package com.cw.videopal.note;
 
-import com.cw.videopal.note_edit.Note_edit;
-import com.cw.videopal.R;
-import com.cw.videopal.db.DB_folder;
-import com.cw.videopal.db.DB_page;
-import com.cw.videopal.main.MainAct;
-import com.cw.videopal.page.PageAdapter_recycler;
-import com.cw.videopal.tabs.TabsHost;
-import com.cw.videopal.util.DeleteFileAlarmReceiver;
-import com.cw.videopal.util.image.UtilImage;
-import com.cw.videopal.util.preferences.Pref;
-import com.cw.videopal.util.video.AsyncTaskVideoBitmapPager;
-import com.cw.videopal.util.video.UtilVideo;
-import com.cw.videopal.util.video.VideoPlayer;
-import com.cw.videopal.operation.mail.MailNotes;
-import com.cw.videopal.util.uil.UilCommon;
-import com.cw.videopal.util.Util;
-
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -51,12 +34,34 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.cw.videopal.R;
+import com.cw.videopal.db.DB_folder;
+import com.cw.videopal.db.DB_page;
+import com.cw.videopal.main.MainAct;
+import com.cw.videopal.note_edit.Note_edit;
+import com.cw.videopal.operation.mail.MailNotes;
+import com.cw.videopal.page.PageAdapter_recycler;
+import com.cw.videopal.tabs.TabsHost;
+import com.cw.videopal.util.DeleteFileAlarmReceiver;
+import com.cw.videopal.util.Util;
+import com.cw.videopal.util.image.UtilImage;
+import com.cw.videopal.util.preferences.Pref;
+import com.cw.videopal.util.uil.UilCommon;
+import com.cw.videopal.util.video.AsyncTaskVideoBitmapPager;
+import com.cw.videopal.util.video.UtilVideo;
+import com.cw.videopal.util.video.VideoPlayer;
+import com.google.android.exoplayer2.C;
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.dynamite.DynamiteModule;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 public class Note extends AppCompatActivity
+		implements  PlayerManager.Listener
 {
     /**
      * The pager widget, which handles animation and allows swiping horizontally to access previous
@@ -64,6 +69,7 @@ public class Note extends AppCompatActivity
      */
     public ViewPager viewPager;
     public static boolean isPagerActive;
+	PlayerManager.Listener listener;
 
     /**
      * The pager adapter, which provides the pages to the view pager widget.
@@ -77,22 +83,39 @@ public class Note extends AppCompatActivity
     int EDIT_CURRENT_VIEW = 5;
     int MAIL_CURRENT_VIEW = 6;
     static int mStyle;
-    
+
     static SharedPreferences mPref_show_note_attribute;
 
     Button editButton;
     Button optionButton;
     Button backButton;
 
-
     public AppCompatActivity act;
     public static int mPlayVideoPositionOfInstance;
+	public CastContext castContext;
+	public PlayerManager playerManager;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) 
+    protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         System.out.println("Note / _onCreate");
+
+	    // Getting the cast context later than onStart can cause device discovery not to take place.
+	    try {
+		    castContext = CastContext.getSharedInstance(this);
+	    } catch (RuntimeException e) {
+		    Throwable cause = e.getCause();
+		    while (cause != null) {
+			    if (cause instanceof DynamiteModule.LoadingException) {
+				    setContentView(R.layout.cast_context_error);
+				    return;
+			    }
+			    cause = cause.getCause();
+		    }
+		    // Unknown error. We propagate it.
+		    throw e;
+	    }
 
 		// set current selection
 		mEntryPosition = getIntent().getExtras().getInt("POSITION");
@@ -201,7 +224,7 @@ public class Note extends AppCompatActivity
 
 		// Instantiate a ViewPager and a PagerAdapter.
 		viewPager = (ViewPager) findViewById(R.id.tabs_pager);
-		mPagerAdapter = new Note_adapter(viewPager,this);
+		mPagerAdapter = new Note_adapter(viewPager,this,castContext,playerManager,this.listener);
 		viewPager.setAdapter(mPagerAdapter);
 		viewPager.setCurrentItem(NoteUi.getFocus_notePos());
 
@@ -346,9 +369,9 @@ public class Note extends AppCompatActivity
 		}
 		else if(isPictureMode())
 		{
-			Util.setFullScreen(act);
-            if(act.getSupportActionBar() != null)
-    			act.getSupportActionBar().hide();
+//			Util.setFullScreen(act);
+//            if(act.getSupportActionBar() != null)
+//    			act.getSupportActionBar().hide();
 		}
 
         // renew pager
@@ -380,7 +403,7 @@ public class Note extends AppCompatActivity
 
 	4. Key guard and Rotate: keep pause
 	 play -> key guard on/off -> pause -> rotate -> pause
-	 ****************************************************************/	
+	 ****************************************************************/
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 	    super.onConfigurationChanged(newConfig);
@@ -411,7 +434,7 @@ public class Note extends AppCompatActivity
 		super.onStart();
 		System.out.println("Note / _onStart");
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -430,9 +453,8 @@ public class Note extends AppCompatActivity
 		Note.setPictureMode();
 
 		setOutline(act);
-
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -457,6 +479,16 @@ public class Note extends AppCompatActivity
 
 		// stop exoPlayer
 		UtilVideo.stopExoPlayer();
+
+		if (castContext == null) {
+			// Nothing to release.
+			return;
+		}
+
+		if(playerManager!=null){
+			playerManager.release();
+			playerManager = null;
+		}
 	}
 	
 	@Override
@@ -500,40 +532,44 @@ public class Note extends AppCompatActivity
         super.onCreateOptionsMenu(menu);
 //		System.out.println("Note / _onCreateOptionsMenu");
 
-		// inflate menu
-		getMenuInflater().inflate(R.menu.pager_menu, menu);
-		mMenu = menu;
+	    getMenuInflater().inflate(R.menu.menu, menu);
+	    CastButtonFactory.setUpMediaRouteButton(this, menu, R.id.media_route_menu_item);
 
-		// menu item: checked status
-		// get checked or not
-		int isChecked = mDb_page.getNoteMarking(NoteUi.getFocus_notePos(),true);
-		if( isChecked == 0)
-			menu.findItem(R.id.VIEW_NOTE_CHECK).setIcon(R.drawable.btn_check_off_holo_dark);
-		else
-			menu.findItem(R.id.VIEW_NOTE_CHECK).setIcon(R.drawable.btn_check_on_holo_dark);
 
-		// menu item: view mode
-   		markCurrentSelected(menu.findItem(R.id.VIEW_ALL),"ALL");
-		markCurrentSelected(menu.findItem(R.id.VIEW_PICTURE),"PICTURE_ONLY");
-		markCurrentSelected(menu.findItem(R.id.VIEW_TEXT),"TEXT_ONLY");
-
-	    // menu item: previous
-		MenuItem itemPrev = menu.findItem(R.id.ACTION_PREVIOUS);
-		itemPrev.setEnabled(viewPager.getCurrentItem() > 0);
-		itemPrev.getIcon().setAlpha(viewPager.getCurrentItem() > 0?255:30);
-
-		// menu item: Next or Finish
-		MenuItem itemNext = menu.findItem(R.id.ACTION_NEXT);
-		itemNext.setTitle((viewPager.getCurrentItem() == mPagerAdapter.getCount() - 1)	?
-									R.string.view_note_slide_action_finish :
-									R.string.view_note_slide_action_next                  );
-
-        // set Disable and Gray for Last item
-		boolean isLastOne = (viewPager.getCurrentItem() == (mPagerAdapter.getCount() - 1));
-        if(isLastOne)
-        	itemNext.setEnabled(false);
-
-        itemNext.getIcon().setAlpha(isLastOne?30:255);
+//		// inflate menu
+//		getMenuInflater().inflate(R.menu.pager_menu, menu);
+//		mMenu = menu;
+//
+//		// menu item: checked status
+//		// get checked or not
+//		int isChecked = mDb_page.getNoteMarking(NoteUi.getFocus_notePos(),true);
+//		if( isChecked == 0)
+//			menu.findItem(R.id.VIEW_NOTE_CHECK).setIcon(R.drawable.btn_check_off_holo_dark);
+//		else
+//			menu.findItem(R.id.VIEW_NOTE_CHECK).setIcon(R.drawable.btn_check_on_holo_dark);
+//
+//		// menu item: view mode
+//   		markCurrentSelected(menu.findItem(R.id.VIEW_ALL),"ALL");
+//		markCurrentSelected(menu.findItem(R.id.VIEW_PICTURE),"PICTURE_ONLY");
+//		markCurrentSelected(menu.findItem(R.id.VIEW_TEXT),"TEXT_ONLY");
+//
+//	    // menu item: previous
+//		MenuItem itemPrev = menu.findItem(R.id.ACTION_PREVIOUS);
+//		itemPrev.setEnabled(viewPager.getCurrentItem() > 0);
+//		itemPrev.getIcon().setAlpha(viewPager.getCurrentItem() > 0?255:30);
+//
+//		// menu item: Next or Finish
+//		MenuItem itemNext = menu.findItem(R.id.ACTION_NEXT);
+//		itemNext.setTitle((viewPager.getCurrentItem() == mPagerAdapter.getCount() - 1)	?
+//									R.string.view_note_slide_action_finish :
+//									R.string.view_note_slide_action_next                  );
+//
+//        // set Disable and Gray for Last item
+//		boolean isLastOne = (viewPager.getCurrentItem() == (mPagerAdapter.getCount() - 1));
+//        if(isLastOne)
+//        	itemNext.setEnabled(false);
+//
+//        itemNext.getIcon().setAlpha(isLastOne?30:255);
 
         return true;
     }
@@ -555,7 +591,7 @@ public class Note extends AppCompatActivity
             		setViewAllMode();
 					setOutline(act);
             	}
-            	else if(isViewAllMode())
+            	else if(isViewAllMode()||isPictureMode())
             	{
 					stopAV();
 	            	finish();
@@ -766,18 +802,18 @@ public class Note extends AppCompatActivity
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
     			 System.out.println("Note / _dispatchTouchEvent / MotionEvent.ACTION_UP / viewPager.getCurrentItem() =" + viewPager.getCurrentItem());
-				 //1st touch to turn on UI
-				 if(picUI_touch == null) {
-				 	picUI_touch = new NoteUi(act, viewPager, viewPager.getCurrentItem());
-				 	picUI_touch.tempShow_picViewUI(5000,getCurrentPictureString());
-				 }
-				 //2nd touch to turn off UI
-				 else
-					 setTransientPicViewUI();
+//				 //1st touch to turn on UI
+//				 if(picUI_touch == null) {
+//				 	picUI_touch = new NoteUi(act, viewPager, viewPager.getCurrentItem());
+//				 	picUI_touch.tempShow_picViewUI(5000,getCurrentPictureString());
+//				 }
+//				 //2nd touch to turn off UI
+//				 else
+//					 setTransientPicViewUI();
 
 				 //1st touch to turn off UI (primary)
-				 if(Note_adapter.picUI_primary != null)
-					 setTransientPicViewUI();
+//				 if(Note_adapter.picUI_primary != null)
+//					 setTransientPicViewUI();
     	  	  	 break;
 
 	        case MotionEvent.ACTION_MOVE:
@@ -863,5 +899,26 @@ public class Note extends AppCompatActivity
 				onKeyDown( keyEvent.getKeyCode(),keyEvent);
 		}
 	};
+
+
+
+	@Override
+	public void onQueuePositionChanged(int previousIndex, int newIndex) {
+		if (previousIndex != C.INDEX_UNSET) {
+//			mediaQueueListAdapter.notifyItemChanged(previousIndex);
+		}
+		if (newIndex != C.INDEX_UNSET) {
+//			mediaQueueListAdapter.notifyItemChanged(newIndex);
+		}
+	}
+
+	@Override
+	public void onUnsupportedTrack(int trackType) {
+		if (trackType == C.TRACK_TYPE_AUDIO) {
+//			showToast(R.string.error_unsupported_audio);
+		} else if (trackType == C.TRACK_TYPE_VIDEO) {
+//			showToast(R.string.error_unsupported_video);
+		}
+	}
 
 }

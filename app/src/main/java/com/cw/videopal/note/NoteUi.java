@@ -16,14 +16,6 @@
 
 package com.cw.videopal.note;
 
-import com.cw.videopal.R;
-import com.cw.videopal.db.DB_page;
-import com.cw.videopal.tabs.TabsHost;
-import com.cw.videopal.util.image.UtilImage;
-import com.cw.videopal.util.video.UtilVideo;
-import com.cw.videopal.util.video.VideoPlayer;
-import com.cw.videopal.util.Util;
-
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -34,8 +26,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
+
+import com.cw.videopal.R;
+import com.cw.videopal.db.DB_page;
+import com.cw.videopal.tabs.TabsHost;
+import com.cw.videopal.util.Util;
+import com.cw.videopal.util.image.UtilImage;
+import com.cw.videopal.util.video.UtilVideo;
+import com.cw.videopal.util.video.VideoPlayer;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
@@ -294,9 +294,9 @@ public class NoteUi
                     popup.show();//showing pop up menu, will show status bar
 
                     // for transient popup
-                    cancel_UI_callbacks();
-                    Note_adapter.picUI_primary = new NoteUi(act,pager, pager.getCurrentItem());
-                    Note_adapter.picUI_primary.tempShow_picViewUI(5005,strPicture);
+//                    cancel_UI_callbacks();
+//                    Note_adapter.picUI_primary = new NoteUi(act,pager, pager.getCurrentItem());
+//                    Note_adapter.picUI_primary.tempShow_picViewUI(5005,strPicture);
 	            }
 	        });
 
@@ -544,26 +544,26 @@ public class NoteUi
     // update video play button state
     public static void updateVideoPlayButtonState(ViewPager pager,int position)
     {
-        ViewGroup pictureGroup = getPictureGroup(position,pager);
-        Button videoPlayButton = null;
-
-        if(pictureGroup != null)
-            videoPlayButton = (Button) (pictureGroup.findViewById(R.id.video_view_play_video));
-
-    	Button btn = videoPlayButton;
-
-    	if(btn == null)
-    		return;
-
-        // show video play button icon
-        int state = UtilVideo.getVideoState();
-        if (state == UtilVideo.VIDEO_AT_PLAY) {
-            btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_media_pause, 0, 0, 0);
-            btn.setVisibility(View.VISIBLE);
-        } else if ((state == UtilVideo.VIDEO_AT_PAUSE) || (state == UtilVideo.VIDEO_AT_STOP)) {
-            btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_media_play, 0, 0, 0);
-            btn.setVisibility(View.VISIBLE);
-        }
+//        ViewGroup pictureGroup = getPictureGroup(position,pager);
+//        Button videoPlayButton = null;
+//
+//        if(pictureGroup != null)
+//            videoPlayButton = (Button) (pictureGroup.findViewById(R.id.video_view_play_video));
+//
+//    	Button btn = videoPlayButton;
+//
+//    	if(btn == null)
+//    		return;
+//
+//        // show video play button icon
+//        int state = UtilVideo.getVideoState();
+//        if (state == UtilVideo.VIDEO_AT_PLAY) {
+//            btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_media_pause, 0, 0, 0);
+//            btn.setVisibility(View.VISIBLE);
+//        } else if ((state == UtilVideo.VIDEO_AT_PAUSE) || (state == UtilVideo.VIDEO_AT_STOP)) {
+//            btn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_media_play, 0, 0, 0);
+//            btn.setVisibility(View.VISIBLE);
+//        }
     }
 
 	public static void primaryVideoSeekBarProgressUpdater(ViewPager pager,int curNotePos,int curVideoPos,String pictureUri)
