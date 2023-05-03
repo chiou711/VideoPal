@@ -16,27 +16,25 @@
 
 package com.cw.videopal.note_add.video;
 
-import java.io.File;
-
-import com.cw.videopal.page.Page_recycler;
-import com.cw.videopal.R;
-import com.cw.videopal.db.DB_page;
-import com.cw.videopal.tabs.TabsHost;
-import com.cw.videopal.util.Util;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.cw.videopal.R;
+import com.cw.videopal.db.DB_page;
+import com.cw.videopal.page.Page_recycler;
+import com.cw.videopal.tabs.TabsHost;
+import com.cw.videopal.util.Util;
+
+import java.io.File;
 
 public class Note_addReadyVideo extends Activity {
 
     Long rowId;
-    TextView progress;
 	private DB_page dB_page;
 
 	@Override
@@ -202,14 +200,6 @@ public class Note_addReadyVideo extends Activity {
 				        		Page_recycler.swapTopBottom();
 				        	}
 				    		
-				        	// avoid showing empty toast
-				        	if(!Util.isEmptyString(urlStr))
-				        	{
-				                String name = Util.getDisplayNameByUriString(urlStr, Note_addReadyVideo.this);
-				                name = i + "/" + total + ": " + name;
-//				        		Util.showSavedFileToast(name,this);
-                                progress.append("\r\n"+name);
-				        	}
 				        	i++;
 						}
 

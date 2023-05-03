@@ -16,40 +16,6 @@
 
 package com.cw.videopal.util;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import com.cw.videopal.R;
-import com.cw.videopal.main.MainAct;
-import com.cw.videopal.page.Checked_notes_option;
-import com.cw.videopal.db.DB_folder;
-import com.cw.videopal.db.DB_page;
-import com.cw.videopal.tabs.TabsHost;
-import com.cw.videopal.util.image.UtilImage;
-import com.cw.videopal.util.preferences.Pref;
-import com.cw.videopal.util.video.UtilVideo;
-import com.cw.videopal.define.Define;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -94,6 +60,40 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.Toast;
+
+import com.cw.videopal.R;
+import com.cw.videopal.db.DB_folder;
+import com.cw.videopal.db.DB_page;
+import com.cw.videopal.define.Define;
+import com.cw.videopal.main.MainAct;
+import com.cw.videopal.page.Checked_notes_option;
+import com.cw.videopal.tabs.TabsHost;
+import com.cw.videopal.util.image.UtilImage;
+import com.cw.videopal.util.preferences.Pref;
+import com.cw.videopal.util.video.UtilVideo;
+
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -1445,7 +1445,7 @@ public class Util
 	}
 
 	// Get transformed path
-	public static String getTransformedPath(String original_path){
+	public static String getTransformedGDrivePath(String original_path){
 		String transformedPath = original_path;
 		if(original_path.contains("drive.google")) {
 			transformedPath = "https://drive.google.com/uc?export=download&id=" + getGDriveFileId(original_path);

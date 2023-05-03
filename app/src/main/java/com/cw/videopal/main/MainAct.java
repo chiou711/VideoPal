@@ -16,6 +16,55 @@
 
 package com.cw.videopal.main;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.StrictMode;
+import android.provider.Settings;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
+
+import com.cw.videopal.R;
+import com.cw.videopal.config.About;
+import com.cw.videopal.config.Config;
+import com.cw.videopal.db.DB_drawer;
+import com.cw.videopal.db.DB_folder;
+import com.cw.videopal.db.DB_page;
+import com.cw.videopal.define.Define;
+import com.cw.videopal.drawer.Drawer;
+import com.cw.videopal.folder.Folder;
+import com.cw.videopal.folder.FolderUi;
+import com.cw.videopal.note_add.Add_note;
+import com.cw.videopal.operation.delete.DeleteFolders;
+import com.cw.videopal.operation.delete.DeletePages;
+import com.cw.videopal.operation.gallery.LocalGalleryGridAct;
+import com.cw.videopal.operation.mail.MailNotes;
+import com.cw.videopal.operation.mail.MailPagesFragment;
+import com.cw.videopal.operation.slideshow.SlideshowInfo;
+import com.cw.videopal.operation.slideshow.SlideshowPlayer;
+import com.cw.videopal.page.Checked_notes_option;
+import com.cw.videopal.page.PageUi;
+import com.cw.videopal.tabs.TabsHost;
+import com.cw.videopal.util.DeleteFileAlarmReceiver;
+import com.cw.videopal.util.OnBackPressedListener;
+import com.cw.videopal.util.Util;
+import com.cw.videopal.util.image.UtilImage;
+import com.cw.videopal.util.preferences.Pref;
+import com.mobeta.android.dslv.DragSortListView;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,58 +73,6 @@ import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.cw.videopal.R;
-import com.cw.videopal.config.About;
-import com.cw.videopal.config.Config;
-import com.cw.videopal.db.DB_folder;
-import com.cw.videopal.db.DB_page;
-import com.cw.videopal.drawer.Drawer;
-import com.cw.videopal.folder.Folder;
-import com.cw.videopal.folder.FolderUi;
-import com.cw.videopal.note_add.Add_note;
-import com.cw.videopal.operation.delete.DeleteFolders;
-import com.cw.videopal.operation.delete.DeletePages;
-import com.cw.videopal.page.Checked_notes_option;
-import com.cw.videopal.page.PageUi;
-import com.cw.videopal.tabs.TabsHost;
-import com.cw.videopal.util.DeleteFileAlarmReceiver;
-import com.cw.videopal.db.DB_drawer;
-import com.cw.videopal.operation.gallery.LocalGalleryGridAct;
-import com.cw.videopal.operation.slideshow.SlideshowInfo;
-import com.cw.videopal.operation.slideshow.SlideshowPlayer;
-import com.cw.videopal.util.image.UtilImage;
-import com.cw.videopal.define.Define;
-import com.cw.videopal.operation.mail.MailNotes;
-import com.cw.videopal.util.OnBackPressedListener;
-import com.cw.videopal.operation.mail.MailPagesFragment;
-import com.cw.videopal.util.Util;
-import com.cw.videopal.util.preferences.Pref;
-import com.mobeta.android.dslv.DragSortListView;
-
-import android.Manifest;
-import android.app.AlertDialog;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.os.Environment;
-import android.os.StrictMode;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.provider.Settings;
-import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -106,8 +103,8 @@ public class MainAct extends AppCompatActivity implements FragmentManager.OnBack
     public static Folder mFolder;
     public static Toolbar mToolbar;
 
-    public static MediaBrowserCompat mMediaBrowserCompat;
-    public static MediaControllerCompat mMediaControllerCompat;
+//    public static MediaBrowserCompat mMediaBrowserCompat;
+//    public static MediaControllerCompat mMediaControllerCompat;
     public static int mCurrentState;
     public final static int STATE_PAUSED = 0;
     public final static int STATE_PLAYING = 1;
@@ -1298,45 +1295,45 @@ public class MainAct extends AppCompatActivity implements FragmentManager.OnBack
 
 
     // callback: media browser connection
-    public static MediaBrowserCompat.ConnectionCallback mMediaBrowserCompatConnectionCallback = new MediaBrowserCompat.ConnectionCallback() {
-        @Override
-        public void onConnected() {
-            super.onConnected();
-
-            System.out.println("MainAct / MediaBrowserCompat.Callback / _onConnected");
-            try {
-                if(mMediaBrowserCompat != null) {
-                    mMediaControllerCompat = new MediaControllerCompat(mAct, mMediaBrowserCompat.getSessionToken());
-                    mMediaControllerCompat.registerCallback(mMediaControllerCompatCallback);
-                    MediaControllerCompat.setMediaController(mAct, mMediaControllerCompat);
-                }
-            } catch( Exception e ) {
-                System.out.println("MainAct / MediaBrowserCompat.Callback / RemoteException");
-            }
-        }
-    };
+//    public static MediaBrowserCompat.ConnectionCallback mMediaBrowserCompatConnectionCallback = new MediaBrowserCompat.ConnectionCallback() {
+//        @Override
+//        public void onConnected() {
+//            super.onConnected();
+//
+//            System.out.println("MainAct / MediaBrowserCompat.Callback / _onConnected");
+//            try {
+//                if(mMediaBrowserCompat != null) {
+//                    mMediaControllerCompat = new MediaControllerCompat(mAct, mMediaBrowserCompat.getSessionToken());
+//                    mMediaControllerCompat.registerCallback(mMediaControllerCompatCallback);
+//                    MediaControllerCompat.setMediaController(mAct, mMediaControllerCompat);
+//                }
+//            } catch( Exception e ) {
+//                System.out.println("MainAct / MediaBrowserCompat.Callback / RemoteException");
+//            }
+//        }
+//    };
 
     // callback: media controller
-    public static MediaControllerCompat.Callback mMediaControllerCompatCallback = new MediaControllerCompat.Callback() {
-        @Override
-        public void onPlaybackStateChanged(PlaybackStateCompat state) {
-            super.onPlaybackStateChanged(state);
-//            System.out.println("MainAct / _MediaControllerCompat.Callback / _onPlaybackStateChanged / state = " + state);
-            if( state == null ) {
-                return;
-            }
-
-            switch( state.getState() ) {
-                case STATE_PLAYING: {
-                    mCurrentState = STATE_PLAYING;
-                    break;
-                }
-                case STATE_PAUSED: {
-                    mCurrentState = STATE_PAUSED;
-                    break;
-                }
-            }
-        }
-    };
+//    public static MediaControllerCompat.Callback mMediaControllerCompatCallback = new MediaControllerCompat.Callback() {
+//        @Override
+//        public void onPlaybackStateChanged(PlaybackStateCompat state) {
+//            super.onPlaybackStateChanged(state);
+////            System.out.println("MainAct / _MediaControllerCompat.Callback / _onPlaybackStateChanged / state = " + state);
+//            if( state == null ) {
+//                return;
+//            }
+//
+//            switch( state.getState() ) {
+//                case STATE_PLAYING: {
+//                    mCurrentState = STATE_PLAYING;
+//                    break;
+//                }
+//                case STATE_PAUSED: {
+//                    mCurrentState = STATE_PAUSED;
+//                    break;
+//                }
+//            }
+//        }
+//    };
 
 }

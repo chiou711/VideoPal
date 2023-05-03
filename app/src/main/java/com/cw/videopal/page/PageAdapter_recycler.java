@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cw.videopal.R;
 import com.cw.videopal.db.DB_folder;
@@ -38,6 +39,8 @@ import com.cw.videopal.note_edit.Note_edit;
 import com.cw.videopal.page.item_touch_helper.ItemTouchHelperAdapter;
 import com.cw.videopal.page.item_touch_helper.ItemTouchHelperViewHolder;
 import com.cw.videopal.page.item_touch_helper.OnStartDragListener;
+import com.cw.videopal.refplayer.server.WebService;
+import com.cw.videopal.refplayer.utils.Utils;
 import com.cw.videopal.tabs.TabsHost;
 import com.cw.videopal.util.ColorSet;
 import com.cw.videopal.util.Util;
@@ -69,6 +72,7 @@ public class PageAdapter_recycler extends RecyclerView.Adapter<PageAdapter_recyc
 	private int page_pos;
     private final OnStartDragListener mDragStartListener;
 	private int page_table_id;
+	public static String deviceIpAddress;
 
     PageAdapter_recycler(int pagePos,  int pageTableId, OnStartDragListener dragStartListener) {
 	    mAct = MainAct.mAct;
@@ -77,6 +81,24 @@ public class PageAdapter_recycler extends RecyclerView.Adapter<PageAdapter_recyc
         dbFolder = new DB_folder(mAct,Pref.getPref_focusView_folder_tableId(mAct));
 	    page_pos = pagePos;
 	    page_table_id = pageTableId;
+
+		// ref: https://github.com/KaustubhPatange/Android-Cast-Local-Sample
+		// get IP address
+	    deviceIpAddress =  Utils.findIPAddress(mAct);
+
+        if (deviceIpAddress == null) {
+            Toast.makeText(
+                    mAct,
+                    "Connect to a wifi device or hotspot",
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        } else
+            System.out.println("--- ip address = " + deviceIpAddress);
+
+        // start Http service
+        mAct.startService(new Intent(mAct, WebService.class));
+
     }
 
     /**
@@ -305,11 +327,61 @@ public class PageAdapter_recycler extends RecyclerView.Adapter<PageAdapter_recyc
                 DB_page db_page = new DB_page(mAct,TabsHost.getCurrentPageTableId());
                 int count = db_page.getNotesCount(true);
                 if(position < count){
-                    // apply Note class
+					///cw: apply Note class
                     Intent intent;
                     intent = new Intent(mAct, Note.class);
                     intent.putExtra("POSITION", position);
                     mAct.startActivity(intent);
+
+	                // ref: https://github.com/googlecast/CastVideos-android
+	                // sample code 1 (VideoBrowserActivity)
+//                    Intent intent;
+//                    intent = new Intent(mAct, VideoBrowserActivity.class);
+//                    intent.putExtra("POSITION", position);
+//                    mAct.startActivity(intent);
+
+	                // sample code 2 (LocalPlayerActivity)
+//	                String title = "testTitle";
+//					String studio = "testStudio";
+//					String subTitle = "testSubTitle";
+//
+//					int duration = 3000;
+//					String videoUrl_ori = db_page.getNotePictureUri(position,true);
+//
+//					if(videoUrl_ori.contains("content"))
+//						videoUrl_ori = Util.getLocalRealPathByUri(mAct, Uri.parse(videoUrl_ori));
+//	                System.out.println("------------ videoUrl_ori =  " + videoUrl_ori);
+//
+//					if(videoUrl_ori.contains("/storage/emulated/0/"))
+//	                    videoUrl_ori = videoUrl_ori.replace("/storage/emulated/0/","/");
+//					else if(videoUrl_ori.contains("/storage/0403-0201/"))
+//						videoUrl_ori = videoUrl_ori.replace("/storage/0403-0201/","/sdcard/");
+//
+//	                String videoUrl = "http://"+ deviceIpAddress+":8080"+videoUrl_ori;
+//					System.out.println("------------ videoUrl =  " + videoUrl);
+//					String mimeType = "videos/mp4";
+//
+//	                String imageUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/CastVideos/images/480x270/DesigningForGoogleCast2-480x270.jpg";
+//					String bigImageUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/CastVideos/images/780x1200/DesigningForGoogleCast-887x1200.jpg";
+//					List<MediaTrack> tracks = new ArrayList<>();
+//					MediaTrack track = VideoProvider.buildTrack(1,
+//							"text",
+//							"captions",
+//							"GoogleIO-2014-CastingToTheFuture2-en.vtt",
+//							"English Subtitle",
+//							"en-US"
+//					);
+//					tracks.add(track);
+//
+//	                MediaInfo item = VideoProvider.buildMediaInfo(title, studio, subTitle,
+//			                                                      duration, videoUrl, mimeType,
+//			                                                      imageUrl, bigImageUrl, tracks);
+//
+//	                Intent intent = new Intent(mAct, LocalPlayerActivity.class);
+//	                intent.putExtra("media", item);
+//	                intent.putExtra("shouldStart", false);
+//	                mAct.startActivity(intent);
+					///
                 }
             }
         });

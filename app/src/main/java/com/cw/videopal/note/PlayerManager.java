@@ -24,6 +24,7 @@ import com.cw.videopal.util.video.UtilVideo;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.MediaMetadata;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.DiscontinuityReason;
 import com.google.android.exoplayer2.Player.TimelineChangeReason;
@@ -37,7 +38,6 @@ import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.gms.cast.framework.CastContext;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import androidx.core.content.res.ResourcesCompat;
 
@@ -69,6 +69,7 @@ import androidx.core.content.res.ResourcesCompat;
   private int currentItemIndex;
   private Player currentPlayer;
   String pictureUrl;
+  String titleStr;
 
   /**
    * Creates a new manager for {@link ExoPlayer} and {@link CastPlayer}.
@@ -79,7 +80,7 @@ import androidx.core.content.res.ResourcesCompat;
    * @param castContext The {@link CastContext}.
    */
   public PlayerManager(
-      Context context, Listener listener, StyledPlayerView playerView, CastContext castContext,String picUrl) {
+      Context context, Listener listener, StyledPlayerView playerView, CastContext castContext,String picUrl,String _titleStr) {
     this.context = context;
     this.listener = listener;
     this.playerView = playerView;
@@ -95,6 +96,7 @@ import androidx.core.content.res.ResourcesCompat;
     castPlayer.setSessionAvailabilityListener(this);
 
     setCurrentPlayer(castPlayer.isCastSessionAvailable() ? castPlayer : localPlayer);
+    titleStr = _titleStr;
   }
 
   // Queue manipulation methods.
@@ -267,14 +269,12 @@ import androidx.core.content.res.ResourcesCompat;
   }
 
   private void setCurrentPlayer(Player currentPlayer) {
-    System.out.println("--------------- setCurrentPlayer 1");
     if (this.currentPlayer == currentPlayer) {
       return;
     }
 
     UtilVideo.exoPlayer = this.currentPlayer;
 
-    System.out.println("--------------- setCurrentPlayer 2");
     playerView.setPlayer(currentPlayer);
     playerView.setControllerHideOnTouch(currentPlayer == localPlayer);
     if (currentPlayer == castPlayer) {
@@ -313,27 +313,26 @@ import androidx.core.content.res.ResourcesCompat;
     }
 
     this.currentPlayer = currentPlayer;
-//			MediaSource mediaSource = new ProgressiveMediaSource.Factory(new FileDataSource.Factory())
-//					.createMediaSource(MediaItem.fromUri(Uri.parse(pictureUrl)));
 
-//			exoplayer_view.setPlayer(UtilVideo.exoPlayer);
+    MediaItem mediaItem = new MediaItem.Builder()
+            .setUri(Uri.parse(pictureUrl))
+            .setMimeType(MimeTypes.VIDEO_MP4V)
+            .setMediaMetadata(new MediaMetadata.Builder().setTitle(titleStr).build())
+            .build();
 
-//    MediaItem mediaItem = MediaItem.fromUri(Uri.parse(pictureUrl));
-//    MediaItem mediaItem = new MediaItem.Builder()
-//            .setUri(Uri.parse(pictureUrl))
-//            .setMimeType(MimeTypes.VIDEO_MP4V)
-//            .build();
-    List<MediaItem> mediaItems = new ArrayList<>();
+      // for media items
+//    List<MediaItem> mediaItems = new ArrayList<>();
 //    currentPlayer.setMediaItem(mediaItem);
-    mediaItems.add(
-            new MediaItem.Builder().setUri(Uri.parse(pictureUrl)).setMimeType(MimeTypes.VIDEO_MP4V).build());
+//    mediaItems.add(
+//            new MediaItem.Builder()
+//                    .setUri(Uri.parse(pictureUrl))
+//                    .setMimeType(MimeTypes.VIDEO_MP4V).build());
 //              new MediaItem.Builder().setUri(Uri.parse(pictureUrl)).build());
+
     // Media queue management.
-    currentPlayer.setMediaItems(mediaItems, 0, 0L);
+    currentPlayer.setMediaItem(mediaItem);
     currentPlayer.setPlayWhenReady(false);
     currentPlayer.prepare();
-
-    System.out.println("--------------- setCurrentPlayer 3");
   }
 
   /**

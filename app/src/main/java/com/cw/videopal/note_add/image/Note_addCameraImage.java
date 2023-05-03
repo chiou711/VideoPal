@@ -16,17 +16,6 @@
 
 package com.cw.videopal.note_add.image;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-
-import com.cw.videopal.page.Page_recycler;
-import com.cw.videopal.R;
-import com.cw.videopal.db.DB_page;
-import com.cw.videopal.tabs.TabsHost;
-import com.cw.videopal.util.image.UtilImage;
-import com.cw.videopal.util.Util;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -44,6 +33,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.cw.videopal.R;
+import com.cw.videopal.db.DB_page;
+import com.cw.videopal.page.Page_recycler;
+import com.cw.videopal.tabs.TabsHost;
+import com.cw.videopal.util.Util;
+import com.cw.videopal.util.image.UtilImage;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 
 import androidx.core.app.ActivityCompat;
 
@@ -321,7 +321,7 @@ public class Note_addCameraImage extends Activity {
 					System.out.println("-- picUri = " + picUri.toString());
 					
 				// get file path and add prefix (file://)
-				String realPath = Util.getRealPathByUri(this, picUri);
+				String realPath = Util.getLocalRealPathByUri(this, picUri);
 				System.out.println("--- realPath = " + realPath);
 				if("content".equalsIgnoreCase(picUri.getScheme()))
 				{

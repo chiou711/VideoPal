@@ -37,7 +37,6 @@ import android.widget.Toast;
 import com.cw.videopal.R;
 import com.cw.videopal.db.DB_folder;
 import com.cw.videopal.db.DB_page;
-import com.cw.videopal.main.MainAct;
 import com.cw.videopal.note_edit.Note_edit;
 import com.cw.videopal.operation.mail.MailNotes;
 import com.cw.videopal.page.PageAdapter_recycler;
@@ -128,7 +127,7 @@ public class Note extends AppCompatActivity
 
 		act = this;
 
-        MainAct.mMediaBrowserCompat = null;
+//        MainAct.mMediaBrowserCompat = null;
 	} //onCreate end
 
 	// Add to prevent resizing full screen picture,
