@@ -1,8 +1,7 @@
-package com.cw.videopal.refplayer.server;
+package com.cw.videopal.util.server;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.os.Environment;
 
 import com.cw.videopal.page.PageAdapter_recycler;
 
@@ -12,6 +11,7 @@ import io.github.dkbai.tinyhttpd.nanohttpd.webserver.SimpleWebServer;
 public class WebService extends  IntentService {
 
     public String TAG = "WebService";
+    public static String root_path;
 
     public WebService() {
         super("WebService");
@@ -68,11 +68,10 @@ public class WebService extends  IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         String[] array = new String[]{"-h",
-//                VideoBrowserFragment.deviceIpAddress,
                 PageAdapter_recycler.deviceIpAddress,
                 "-p 8080",
                 "-d",
-                Environment.getExternalStorageDirectory().getAbsolutePath()
+                root_path
         };
         SimpleWebServer.runServer(
 //                arrayOf(
