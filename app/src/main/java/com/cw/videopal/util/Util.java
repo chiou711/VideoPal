@@ -88,8 +88,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
@@ -1451,6 +1454,42 @@ public class Util
 			transformedPath = "https://drive.google.com/uc?export=download&id=" + getGDriveFileId(original_path);
 		}
 		return transformedPath;
+	}
+
+	/**
+	 * Returns all available external SD-Card roots in the system.
+	 *
+	 * @return paths to all available external SD-Card roots in the system.
+	 */
+	public static String[] getStorageDirectories(Context context) {
+		String [] storageDirectories;
+		String rawSecondaryStoragesStr = System.getenv("SECONDARY_STORAGE");
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			List<String> results = new ArrayList<String>();
+			File[] externalDirs = context.getExternalFilesDirs(null);
+			for (File file : externalDirs) {
+				String path = file.getPath().split("/Android")[0];
+				if((Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && Environment.isExternalStorageRemovable(file))
+						|| rawSecondaryStoragesStr != null && rawSecondaryStoragesStr.contains(path)){
+					results.add(path);
+				}
+			}
+			storageDirectories = results.toArray(new String[0]);
+		}else{
+			final Set<String> rv = new HashSet<String>();
+
+			if (!TextUtils.isEmpty(rawSecondaryStoragesStr)) {
+				final String[] rawSecondaryStorages = rawSecondaryStoragesStr.split(File.pathSeparator);
+				Collections.addAll(rv, rawSecondaryStorages);
+			}
+			storageDirectories = rv.toArray(new String[rv.size()]);
+		}
+
+		for(int i=0;i<storageDirectories.length;i++)
+			System.out.println("storageDirectories["+i+"] = " + storageDirectories[i]);
+
+		return storageDirectories;
 	}
 
 }

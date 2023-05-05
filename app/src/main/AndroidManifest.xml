@@ -182,7 +182,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.cw.videopal.refplayer.VideoBrowserActivity"/>
         </activity>
-        <service android:name="com.cw.videopal.refplayer.server.WebService" />
+        <service android:name=".util.server.WebService" />
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="com.cw.videopal.refplayer.CastOptionsProvider"/>

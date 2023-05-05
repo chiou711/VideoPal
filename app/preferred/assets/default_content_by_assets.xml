@@ -20,13 +20,13 @@
         </note>
     </page>
 
-    <page>
-        <page_name>Photo</page_name>
-        <note>
-            <title>[n]local image file</title>
-            <picture>file:///storage/emulated/0/Android/data/com.cw.videopal/files/Documents/local.jpg</picture>
-        </note>
-    </page>
+<!--    <page>-->
+<!--        <page_name>Photo</page_name>-->
+<!--        <note>-->
+<!--            <title>[n]local image file</title>-->
+<!--            <picture>file:///storage/emulated/0/Android/data/com.cw.videopal/files/Documents/local.jpg</picture>-->
+<!--        </note>-->
+<!--    </page>-->
 
     <page>
     <page_name>Local Video</page_name>

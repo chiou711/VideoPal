@@ -19,6 +19,7 @@ package com.cw.videopal.note;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ import com.cw.videopal.tabs.TabsHost;
 import com.cw.videopal.util.ColorSet;
 import com.cw.videopal.util.Util;
 import com.cw.videopal.util.image.TouchImageView;
+import com.cw.videopal.util.server.WebService;
 import com.cw.videopal.util.video.UtilVideo;
 import com.cw.videopal.util.video.VideoViewCustom;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -42,7 +44,6 @@ import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.gms.cast.framework.CastContext;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -261,13 +262,12 @@ public class Note_adapter extends FragmentStatePagerAdapter
 
 				StyledPlayerView exoplayer_view = (StyledPlayerView) ((View)object).findViewById(R.id.exoplayer_view);
 
+				// ref: https://github.com/google/ExoPlayer
 				///cw: set ExoPlayer
-				if(pictureStr.contains("http"))
-					httpExoPlayer(exoplayer_view,pictureStr);
+				if(pictureStr.contains("drive.google") )
+					exoPlayer_gDrive(exoplayer_view,pictureStr); //@@@ cast failed
 				else
-					localExoPlayer(exoplayer_view,pictureStr);
-					// apply player manager: supports Cast
-//					localExoPlayerCast(exoplayer_view,pictureStr,titleStr);
+					exoPlayer_cast(exoplayer_view,pictureStr,titleStr);
 			}
 
 		}
@@ -275,65 +275,9 @@ public class Note_adapter extends FragmentStatePagerAdapter
 	    
 	} //setPrimaryItem
 
-	// local ExoPlayer
-	void localExoPlayer(StyledPlayerView object,String pictureStr){
-
-		if(pictureStr.contains("file://"))
-			pictureStr = pictureStr.replace("file://","");
-		else if(pictureStr.startsWith("content"))
-			pictureStr = Util.getLocalRealPathByUri(act,Uri.parse(pictureStr));
-
-		UtilVideo.mCurrentPagerView = (View) object;
-
-		UtilVideo.exoPlayer = new ExoPlayer.Builder(act).build();
-		StyledPlayerView exoplayer_view = ((StyledPlayerView) UtilVideo.mCurrentPagerView.findViewById(R.id.exoplayer_view));
-		exoplayer_view.setControllerShowTimeoutMs(0);
-		exoplayer_view.showController();
-		exoplayer_view.setDefaultArtwork(
-				ResourcesCompat.getDrawable(
-						act.getResources(),
-						R.drawable.ic_baseline_cast_connected_400,
-						/* theme= */ null));
-
-		try {
-		    MediaItem mediaItem = new MediaItem.Builder()
-		            .setUri(Uri.parse(pictureStr))
-		            .setMimeType(MimeTypes.VIDEO_MP4V)
-		            .build();
-			UtilVideo.exoPlayer.setMediaItem(mediaItem);
-
-			exoplayer_view.setPlayer(UtilVideo.exoPlayer);
-			UtilVideo.exoPlayer.prepare();
-			System.out.println("------------ Uri.parse(pictureStr) = " + Uri.parse(pictureStr));
-			//UtilVideo.exoPlayer.setPlayWhenReady(true);
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-	}
-
-	// local ExoPlayer 2 (player manager)
-	void localExoPlayerCast(StyledPlayerView object, String pictureStr, String titleStr){
-
-		if(pictureStr.contains("file://"))
-			pictureStr = pictureStr.replace("file://","");
-		else if(pictureStr.startsWith("content") )
-			pictureStr = Util.getLocalRealPathByUri(act,Uri.parse(pictureStr));
-
-		if(pictureStr.contains("/storage/emulated/0/"))
-			pictureStr = pictureStr.replace("/storage/emulated/0/","/");
-		pictureStr = "http://"+ PageAdapter_recycler.deviceIpAddress+":8080"+pictureStr;
-		System.out.println("---- 0501 ---- pictureUrl = " + pictureStr);
-
-		UtilVideo.mCurrentPagerView = (View) object;
-		StyledPlayerView exoplayer_view = ((StyledPlayerView) UtilVideo.mCurrentPagerView.findViewById(R.id.exoplayer_view));
-
-		// player inside player manager
-		playerManager = new PlayerManager(act,listener,exoplayer_view,castContext,pictureStr,titleStr);
-	}
-
-	// http ExoPlayer
-	void httpExoPlayer(StyledPlayerView object,String pictureStr){
-		System.out.println("---------- httpExoPlayer / pictureStr = " + pictureStr);
+	// Google drive path ExoPlayer
+	void exoPlayer_gDrive(StyledPlayerView object, String pictureStr){
+		System.out.println("---------- gDriveExoPlayer / pictureStr = " + pictureStr);
 		UtilVideo.mCurrentPagerView = object;
 		UtilVideo.exoPlayer = new ExoPlayer.Builder(act).build();
 		StyledPlayerView exoplayer_view = ((StyledPlayerView) UtilVideo.mCurrentPagerView.findViewById(R.id.exoplayer_view));
@@ -349,10 +293,61 @@ public class Note_adapter extends FragmentStatePagerAdapter
 			exoplayer_view.setPlayer(UtilVideo.exoPlayer);
 
 			UtilVideo.exoPlayer.prepare();
-			System.out.println("------------ httpExoPlayer / videoUri = " + videoUri);
-			//UtilVideo.exoPlayer.setPlayWhenReady(true);
+			System.out.println("------------ gDriveExoPlayer / videoUri = " + videoUri);
 		}catch (Exception e){
 			e.printStackTrace();
 		}
 	}
+
+	// cast ExoPlayer (player manager)
+	// support
+	// - https path with MP4
+	// - device storage
+	// - SdCard
+	void exoPlayer_cast(StyledPlayerView object, String pictureStr, String titleStr){
+		// at local device storage
+		if(pictureStr.contains("file://"))
+			pictureStr = pictureStr.replace("file://","");
+		else if(pictureStr.startsWith("content") )
+			pictureStr = Util.getLocalRealPathByUri(act,Uri.parse(pictureStr));
+
+		// set root path for Web service
+		// root of external storage:
+		//  - Environment.getExternalStorageDirectory().getAbsolutePath()
+		//  - /storage/emulated/0/
+		String deviceStoragePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+
+		// root of sdcard:
+		//  - /storage/0403-0201/
+		String[] sdCardPath= Util.getStorageDirectories(act);
+
+		WebService.root_path = null;
+		if(pictureStr.contains(deviceStoragePath))
+			WebService.root_path = deviceStoragePath;
+		else {
+			for(int i=0;i<sdCardPath.length;i++){
+				if(pictureStr.contains(sdCardPath[i]))
+					WebService.root_path = sdCardPath[i];
+			}
+		}
+
+		if( WebService.root_path!= null) {
+			// add http://device_IP:8080 prefix
+			if (pictureStr.contains(WebService.root_path)) {
+				pictureStr = pictureStr.replace(WebService.root_path, "");
+				pictureStr = "http://" + PageAdapter_recycler.deviceIpAddress + ":8080" + pictureStr;
+			}
+
+			// start web service
+			act.startService(new Intent(act, WebService.class));
+		}
+		System.out.println("Note_adapter / exoPlayer_cast / pictureStr = " + pictureStr);
+
+		UtilVideo.mCurrentPagerView = (View) object;
+		StyledPlayerView exoplayer_view = ((StyledPlayerView) UtilVideo.mCurrentPagerView.findViewById(R.id.exoplayer_view));
+
+		// player inside player manager
+		playerManager = new PlayerManager(act,listener,exoplayer_view,castContext,pictureStr,titleStr);
+	}
+
 }

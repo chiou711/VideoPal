@@ -53,6 +53,11 @@ public class CastOptionsProvider implements OptionsProvider {
                 .setExpandedControllerActivityClassName(Note.class.getName())
                 .build();
         /** Following lines enable Cast Connect */
+
+        // about app_id
+        // ref https://stackoverflow.com/questions/54189934/google-cast-sender-app-showing-sample-watermark-on-tv-screen-when-connected
+        // original is C0868879: show red Sample watermark on TV screen
+        // now is CC1AD845 : The application ID for the Cast Default Media Receiver.
         LaunchOptions launchOptions = new LaunchOptions.Builder()
                 .setAndroidReceiverCompatible(true)
                 .build();

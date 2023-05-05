@@ -39,7 +39,6 @@ import com.cw.videopal.note_edit.Note_edit;
 import com.cw.videopal.page.item_touch_helper.ItemTouchHelperAdapter;
 import com.cw.videopal.page.item_touch_helper.ItemTouchHelperViewHolder;
 import com.cw.videopal.page.item_touch_helper.OnStartDragListener;
-import com.cw.videopal.refplayer.server.WebService;
 import com.cw.videopal.refplayer.utils.Utils;
 import com.cw.videopal.tabs.TabsHost;
 import com.cw.videopal.util.ColorSet;
@@ -95,10 +94,6 @@ public class PageAdapter_recycler extends RecyclerView.Adapter<PageAdapter_recyc
             return;
         } else
             System.out.println("--- ip address = " + deviceIpAddress);
-
-        // start Http service
-        mAct.startService(new Intent(mAct, WebService.class));
-
     }
 
     /**
