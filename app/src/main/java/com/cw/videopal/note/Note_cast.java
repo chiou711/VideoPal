@@ -22,7 +22,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -45,11 +47,13 @@ import com.cw.videopal.util.DeleteFileAlarmReceiver;
 import com.cw.videopal.util.Util;
 import com.cw.videopal.util.image.UtilImage;
 import com.cw.videopal.util.preferences.Pref;
+import com.cw.videopal.util.server.WebService;
 import com.cw.videopal.util.uil.UilCommon;
 import com.cw.videopal.util.video.AsyncTaskVideoBitmapPager;
 import com.cw.videopal.util.video.UtilVideo;
 import com.cw.videopal.util.video.VideoPlayer;
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.ui.StyledPlayerView;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.dynamite.DynamiteModule;
@@ -59,7 +63,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-public class Note extends AppCompatActivity
+public class Note_cast extends AppCompatActivity
 		implements  PlayerManager.Listener
 {
     /**
@@ -90,6 +94,7 @@ public class Note extends AppCompatActivity
 
     public AppCompatActivity act;
     public static int mPlayVideoPositionOfInstance;
+
 	public CastContext castContext;
 	public PlayerManager playerManager;
 	PlayerManager.Listener listener;
@@ -136,8 +141,9 @@ public class Note extends AppCompatActivity
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
 		System.out.println("Note / _onWindowFocusChanged");
-		if (hasFocus && isPictureMode() )
-			Util.setFullScreen(act);
+		///cw
+//		if (hasFocus && isPictureMode() )
+//			Util.setFullScreen(act);
 	}
 
 	// key event: 1 from bluetooth device 2 when notification bar dose not shown
@@ -246,7 +252,7 @@ public class Note extends AppCompatActivity
 		{
 			public void onClick(View view)
 			{
-				Intent intent = new Intent(Note.this, Note_edit.class);
+				Intent intent = new Intent(Note_cast.this, Note_edit.class);
 				intent.putExtra(DB_page.KEY_NOTE_ID, mNoteId);
 				intent.putExtra(DB_page.KEY_NOTE_TITLE, mDb_page.getNoteTitle_byId(mNoteId));
 				intent.putExtra(DB_page.KEY_NOTE_PICTURE_URI , mDb_page.getNotePictureUri_byId(mNoteId));
@@ -378,7 +384,7 @@ public class Note extends AppCompatActivity
 
 		LinearLayout buttonGroup = (LinearLayout) act.findViewById(R.id.view_button_group);
         // button group
-        if(Note.isPictureMode() )
+        if(Note_cast.isPictureMode() )
             buttonGroup.setVisibility(View.GONE);
         else
             buttonGroup.setVisibility(View.VISIBLE);
@@ -420,9 +426,9 @@ public class Note extends AppCompatActivity
         setLayoutView();
 
         if(canShowFullScreenPicture())
-            Note.setPictureMode();
+            Note_cast.setPictureMode();
         else
-            Note.setViewAllMode();
+            Note_cast.setViewAllMode();
 
         // Set outline of view mode
         setOutline(act);
@@ -439,7 +445,8 @@ public class Note extends AppCompatActivity
 		super.onResume();
 		System.out.println("Note / _onResume");
 
-		setLayoutView();
+		///cw
+//		setLayoutView();
 
 		isPagerActive = true;
 
@@ -448,10 +455,26 @@ public class Note extends AppCompatActivity
 //        else
 //            Note.setViewAllMode();
 
+		///cw
 		// always set picture mode for this App
-		Note.setPictureMode();
+//		Note.setPictureMode();
 
-		setOutline(act);
+		///cw
+//		setOutline(act);
+
+		///cw
+		setContentView(R.layout.note_view_portrait_cast);
+		mDb_page = new DB_page(act, TabsHost.getCurrentPageTableId());
+		String pictureStr = mDb_page.getNotePictureUri(NoteUi.getFocus_notePos(),true);
+		String titleStr = mDb_page.getNoteTitle(NoteUi.getFocus_notePos(),true);
+
+		Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(mToolbar);
+		if (getSupportActionBar() != null) {
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
+
+		exoPlayer_cast2(pictureStr, titleStr);
 	}
 
 	@Override
@@ -488,6 +511,8 @@ public class Note extends AppCompatActivity
 			playerManager.release();
 			playerManager = null;
 		}
+
+//		setTurnScreenOn(false);
 	}
 	
 	@Override
@@ -529,7 +554,7 @@ public class Note extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) 
     {
         super.onCreateOptionsMenu(menu);
-//		System.out.println("Note / _onCreateOptionsMenu");
+		System.out.println("Note / _onCreateOptionsMenu");
 
 	    getMenuInflater().inflate(R.menu.menu, menu);
 	    CastButtonFactory.setUpMediaRouteButton(this, menu, R.id.media_route_menu_item);
@@ -584,17 +609,17 @@ public class Note extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-            	if(isTextMode())
-            	{
-        			// back to view all mode
-            		setViewAllMode();
-					setOutline(act);
-            	}
-            	else if(isViewAllMode()||isPictureMode())
-            	{
-					stopAV();
+//            	if(isTextMode())
+//            	{
+//        			// back to view all mode
+//            		setViewAllMode();
+//					setOutline(act);
+//            	}
+//            	else if(isViewAllMode()||isPictureMode())
+//            	{
+//					stopAV();
 	            	finish();
-            	}
+//            	}
                 return true;
 
             case R.id.VIEW_NOTE_MODE:
@@ -649,40 +674,41 @@ public class Note extends AppCompatActivity
     public void onBackPressed() {
 		System.out.println("Note / _onBackPressed");
     	// web view can go back
-        if(isPictureMode())
-    	{
-//            // dispatch touch event to show buttons
-//            long downTime = SystemClock.uptimeMillis();
-//            long eventTime = SystemClock.uptimeMillis() + 100;
-//            float x = 0.0f;
-//            float y = 0.0f;
-//            // List of meta states found here: developer.android.com/reference/android/view/KeyEvent.html#getMetaState()
-//            int metaState = 0;
-//            MotionEvent event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP,
-//                                                    x, y,metaState);
-//            dispatchTouchEvent(event);
-//            event.recycle();
+	    ///cw
+//        if(isPictureMode())
+//    	{
+////            // dispatch touch event to show buttons
+////            long downTime = SystemClock.uptimeMillis();
+////            long eventTime = SystemClock.uptimeMillis() + 100;
+////            float x = 0.0f;
+////            float y = 0.0f;
+////            // List of meta states found here: developer.android.com/reference/android/view/KeyEvent.html#getMetaState()
+////            int metaState = 0;
+////            MotionEvent event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP,
+////                                                    x, y,metaState);
+////            dispatchTouchEvent(event);
+////            event.recycle();
+////
+////            // in order to make sure ImageViewBackButton is effective to be clicked
+////            mPagerHandler = new Handler();
+////            mPagerHandler.postDelayed(mOnBackPressedRun, 500);
 //
-//            // in order to make sure ImageViewBackButton is effective to be clicked
-//            mPagerHandler = new Handler();
-//            mPagerHandler.postDelayed(mOnBackPressedRun, 500);
-
-		    // back to view all mode
-		    setViewAllMode();
-		    setOutline(act);
-        }
-        else if(isTextMode())
-    	{
-			// back to view all mode
-    		setViewAllMode();
-			setOutline(act);
-    	}
-    	else
-    	{
-    		System.out.println("Note / _onBackPressed / view all mode");
-			stopAV();
+//		    // back to view all mode
+//		    setViewAllMode();
+//		    setOutline(act);
+//        }
+//        else if(isTextMode())
+//    	{
+//			// back to view all mode
+//    		setViewAllMode();
+//			setOutline(act);
+//    	}
+//    	else
+//    	{
+//    		System.out.println("Note / _onBackPressed / view all mode");
+//			stopAV();
         	finish();
-    	}
+//    	}
     }
     
     static Handler mPagerHandler;
@@ -727,7 +753,7 @@ public class Note extends AppCompatActivity
     {
    		mIsViewModeChanged = false;
 
-		if(!Note.isTextMode())
+		if(!Note_cast.isTextMode())
    		{
 	   		if(UtilVideo.mVideoView != null)
 	   		{
@@ -800,7 +826,8 @@ public class Note extends AppCompatActivity
         switch (maskedAction) {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
-    			 System.out.println("Note / _dispatchTouchEvent / MotionEvent.ACTION_UP / viewPager.getCurrentItem() =" + viewPager.getCurrentItem());
+				///cw
+//    			 System.out.println("Note / _dispatchTouchEvent / MotionEvent.ACTION_UP / viewPager.getCurrentItem() =" + viewPager.getCurrentItem());
 //				 //1st touch to turn on UI
 //				 if(picUI_touch == null) {
 //				 	picUI_touch = new NoteUi(act, viewPager, viewPager.getCurrentItem());
@@ -920,4 +947,91 @@ public class Note extends AppCompatActivity
 		}
 	}
 
+	///cw
+	// local ExoPlayer
+//	void localExoPlayer2(String pictureStr){
+//
+//		if(pictureStr.contains("file://"))
+//			pictureStr = pictureStr.replace("file://","");
+//		else if(pictureStr.startsWith("content"))
+//			pictureStr = Util.getLocalRealPathByUri(act, Uri.parse(pictureStr));
+//
+////		UtilVideo.mCurrentPagerView = (View) object;
+//
+//		UtilVideo.exoPlayer = new ExoPlayer.Builder(act).build();
+//		StyledPlayerView exoplayer_view = ((StyledPlayerView) act.findViewById(R.id.exoplayer_view2));
+//		exoplayer_view.setControllerShowTimeoutMs(0);
+//		exoplayer_view.showController();
+//		exoplayer_view.setDefaultArtwork(
+//				ResourcesCompat.getDrawable(
+//						act.getResources(),
+//						R.drawable.ic_baseline_cast_connected_400,
+//						/* theme= */ null));
+//
+//		try {
+//			MediaItem mediaItem = new MediaItem.Builder()
+//					.setUri(Uri.parse(pictureStr))
+//					.setMimeType(MimeTypes.VIDEO_MP4V)
+//					.build();
+//			UtilVideo.exoPlayer.setMediaItem(mediaItem);
+//
+//			exoplayer_view.setPlayer(UtilVideo.exoPlayer);
+//			UtilVideo.exoPlayer.prepare();
+//			System.out.println("------------ Uri.parse(pictureStr) = " + Uri.parse(pictureStr));
+//			//UtilVideo.exoPlayer.setPlayWhenReady(true);
+//		}catch (Exception e){
+//			e.printStackTrace();
+//		}
+//	}
+
+	// cast ExoPlayer (player manager)
+	// support
+	// - https path with MP4
+	// - device storage
+	// - SdCard
+	void exoPlayer_cast2(String pictureStr, String titleStr){
+		// at local device storage
+		if(pictureStr.contains("file://"))
+			pictureStr = pictureStr.replace("file://","");
+		else if(pictureStr.startsWith("content") )
+			pictureStr = Util.getLocalRealPathByUri(act,Uri.parse(pictureStr));
+
+		// set root path for Web service
+		// root of external storage:
+		//  - Environment.getExternalStorageDirectory().getAbsolutePath()
+		//  - /storage/emulated/0/
+		String deviceStoragePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+
+		// root of sdcard:
+		//  - /storage/0403-0201/
+		String[] sdCardPath= Util.getStorageDirectories(act);
+
+		WebService.root_path = null;
+		if(pictureStr.contains(deviceStoragePath))
+			WebService.root_path = deviceStoragePath;
+		else {
+			for(int i=0;i<sdCardPath.length;i++){
+				if(pictureStr.contains(sdCardPath[i]))
+					WebService.root_path = sdCardPath[i];
+			}
+		}
+
+		if( WebService.root_path!= null) {
+			// add http://device_IP:8080 prefix
+			if (pictureStr.contains(WebService.root_path)) {
+				pictureStr = pictureStr.replace(WebService.root_path, "");
+				pictureStr = "http://" + PageAdapter_recycler.deviceIpAddress + ":8080" + pictureStr;
+			}
+
+			// start web service
+			act.startService(new Intent(act, WebService.class));
+		}
+		System.out.println("Note / exoPlayer_cast2 / pictureStr = " + pictureStr);
+
+//		UtilVideo.mCurrentPagerView = (View) object;
+		StyledPlayerView exoplayer_view = ((StyledPlayerView) findViewById(R.id.exoplayer_view2));
+
+		// player inside player manager
+		playerManager = new PlayerManager(act,listener,exoplayer_view,castContext,pictureStr,titleStr);
+	}
 }

@@ -44,6 +44,7 @@ import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.gms.cast.framework.CastContext;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -267,6 +268,8 @@ public class Note_adapter extends FragmentStatePagerAdapter
 				if(pictureStr.contains("drive.google") )
 					exoPlayer_gDrive(exoplayer_view,pictureStr); //@@@ cast failed
 				else
+//					localExoPlayer(exoplayer_view,pictureStr);
+					///cw
 					exoPlayer_cast(exoplayer_view,pictureStr,titleStr);
 			}
 
@@ -348,6 +351,42 @@ public class Note_adapter extends FragmentStatePagerAdapter
 
 		// player inside player manager
 		playerManager = new PlayerManager(act,listener,exoplayer_view,castContext,pictureStr,titleStr);
+	}
+
+	// local ExoPlayer
+	void localExoPlayer(StyledPlayerView object,String pictureStr){
+
+		if(pictureStr.contains("file://"))
+			pictureStr = pictureStr.replace("file://","");
+		else if(pictureStr.startsWith("content"))
+			pictureStr = Util.getLocalRealPathByUri(act,Uri.parse(pictureStr));
+
+		UtilVideo.mCurrentPagerView = (View) object;
+
+		UtilVideo.exoPlayer = new ExoPlayer.Builder(act).build();
+		StyledPlayerView exoplayer_view = ((StyledPlayerView) UtilVideo.mCurrentPagerView.findViewById(R.id.exoplayer_view));
+		exoplayer_view.setControllerShowTimeoutMs(0);
+		exoplayer_view.showController();
+		exoplayer_view.setDefaultArtwork(
+				ResourcesCompat.getDrawable(
+						act.getResources(),
+						R.drawable.ic_baseline_cast_connected_400,
+						/* theme= */ null));
+
+		try {
+			MediaItem mediaItem = new MediaItem.Builder()
+					.setUri(Uri.parse(pictureStr))
+					.setMimeType(MimeTypes.VIDEO_MP4V)
+					.build();
+			UtilVideo.exoPlayer.setMediaItem(mediaItem);
+
+			exoplayer_view.setPlayer(UtilVideo.exoPlayer);
+			UtilVideo.exoPlayer.prepare();
+			System.out.println("------------ Uri.parse(pictureStr) = " + Uri.parse(pictureStr));
+			//UtilVideo.exoPlayer.setPlayWhenReady(true);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 
 }

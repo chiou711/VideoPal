@@ -78,6 +78,14 @@
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </activity>
+        <activity android:name="com.cw.videopal.note.Note_cast"
+            android:theme="@style/MyTheme"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
+            android:exported="true">
+            <intent-filter android:priority="0">
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </activity>
         <activity android:name="com.cw.videopal.note_add.pictureUri.Note_addPictureUri"
             android:theme="@style/MyTheme"
             android:windowSoftInputMode="adjustPan"
