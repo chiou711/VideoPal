@@ -54,6 +54,7 @@ public class Pref
     // set page table id of focus view
     public static void setPref_focusView_page_tableId(Activity act, int pageTableId )
     {
+        System.out.println("-------- setPref_focusView_page_tableId / pageTableId = " + pageTableId);
         SharedPreferences pref = act.getSharedPreferences("focus_view", 0);
         String keyPrefix = "KEY_FOCUS_VIEW_PAGE_TABLE_ID_";
         int folderTableId = getPref_focusView_folder_tableId(act);

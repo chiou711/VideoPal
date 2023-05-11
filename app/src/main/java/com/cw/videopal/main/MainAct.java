@@ -208,8 +208,6 @@ public class MainAct extends AppCompatActivity implements FragmentManager.OnBack
                 recreate();
             }
         }
-
-        doCreate();
     }
 
     public void checkStorageManagerPermission() {

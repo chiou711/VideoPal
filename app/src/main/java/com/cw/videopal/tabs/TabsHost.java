@@ -22,15 +22,6 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDialogFragment;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,22 +40,24 @@ import com.cw.videopal.page.Page_recycler;
 import com.cw.videopal.util.ColorSet;
 import com.cw.videopal.util.Util;
 import com.cw.videopal.util.preferences.Pref;
-
-//if(Define.ENABLE_ADMOB), enable the following
-//import com.google.android.gms.ads.AdRequest;
-//import com.google.android.gms.ads.AdView;
-//import com.google.android.gms.ads.MobileAds;
-//
-//import com.google.android.gms.ads.initialization.InitializationStatus;
-//import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 public class TabsHost extends AppCompatDialogFragment implements TabLayout.OnTabSelectedListener
 {
     public static TabLayout mTabLayout;
-    public static ViewPager mViewPager;
+    public static ViewPager2 mViewPager;
     public static TabsPagerAdapter mTabsPagerAdapter;
     public static int mFocusPageTableId;
     public static int mFocusTabPos;
@@ -117,10 +110,10 @@ public class TabsHost extends AppCompatDialogFragment implements TabLayout.OnTab
         }
 
         // view pager
-        mViewPager = (ViewPager) rootView.findViewById(R.id.tabs_pager);
+        mViewPager = (ViewPager2) rootView.findViewById(R.id.tabs_pager);
 
         // mTabsPagerAdapter
-        mTabsPagerAdapter = new TabsPagerAdapter(MainAct.mAct,MainAct.mAct.getSupportFragmentManager());
+        mTabsPagerAdapter = new TabsPagerAdapter(MainAct.mAct);
 //        mTabsPagerAdapter = new TabsPagerAdapter(MainAct.mAct,getChildFragmentManager());
 
         // add pages to mTabsPagerAdapter
@@ -144,7 +137,15 @@ public class TabsHost extends AppCompatDialogFragment implements TabLayout.OnTab
 
         // set tab layout
         mTabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
-        mTabLayout.setupWithViewPager(mViewPager);
+//        mTabLayout.setupWithViewPager(mViewPager);
+
+        new TabLayoutMediator(mTabLayout, mViewPager,
+                new TabLayoutMediator.TabConfigurationStrategy() {
+                    @Override public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                        tab.setText(mTabsPagerAdapter.getPageTitle(position) );
+                    }
+                }).attach();
+
         mTabLayout.addOnTabSelectedListener(this);
         mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 //        mTabLayout.setTabMode(TabLayout.MODE_FIXED);
@@ -334,6 +335,9 @@ public class TabsHost extends AppCompatDialogFragment implements TabLayout.OnTab
 
         if(Drawer.getFolderCount() == 0)
             return;//todo Check again
+
+        if(mTabsPagerAdapter == null)
+            return;
 
         // restore focus view page
         int pageCount = mTabsPagerAdapter.dbFolder.getPagesCount(true);
@@ -713,8 +717,10 @@ public class TabsHost extends AppCompatDialogFragment implements TabLayout.OnTab
 
             for (int i = 0; i < fragmentList.size(); i++) {
                 System.out.println("TabsHost / _removeTabs / i = " + i);
+                TabsHost.mTabsPagerAdapter.fragmentList.get(i).itemAdapter = null;
                 MainAct.mAct.getSupportFragmentManager().beginTransaction().remove(fragmentList.get(i)).commit();
             }
+            mTabsPagerAdapter = null;
         }
     }
 

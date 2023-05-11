@@ -34,7 +34,7 @@ import com.cw.videopal.R;
 import com.cw.videopal.db.DB_folder;
 import com.cw.videopal.db.DB_page;
 import com.cw.videopal.main.MainAct;
-import com.cw.videopal.note.Note_cast;
+import com.cw.videopal.note.Note;
 import com.cw.videopal.note_edit.Note_edit;
 import com.cw.videopal.page.item_touch_helper.ItemTouchHelperAdapter;
 import com.cw.videopal.page.item_touch_helper.ItemTouchHelperViewHolder;
@@ -73,7 +73,7 @@ public class PageAdapter_recycler extends RecyclerView.Adapter<PageAdapter_recyc
 	private int page_table_id;
 	public static String deviceIpAddress;
 
-    PageAdapter_recycler(int pagePos,  int pageTableId, OnStartDragListener dragStartListener) {
+    public PageAdapter_recycler(int pagePos,  int pageTableId, OnStartDragListener dragStartListener) {
 	    mAct = MainAct.mAct;
 	    mDragStartListener = dragStartListener;
 
@@ -324,8 +324,8 @@ public class PageAdapter_recycler extends RecyclerView.Adapter<PageAdapter_recyc
                 if(position < count){
 					///cw: apply Note class
                     Intent intent;
-//	                intent = new Intent(mAct, Note.class);///cw pager cast
-	                intent = new Intent(mAct, Note_cast.class); ///cw cast without pager
+	                intent = new Intent(mAct, Note.class);///cw pager cast
+//	                intent = new Intent(mAct, Note_cast.class); ///cw cast without pager
                     intent.putExtra("POSITION", position);
                     mAct.startActivity(intent);
 

@@ -16,10 +16,6 @@
 
 package com.cw.videopal.util.video;
 
-import com.cw.videopal.R;
-import com.cw.videopal.util.image.UtilImage;
-import com.cw.videopal.note.Note;
-
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -29,6 +25,10 @@ import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+
+import com.cw.videopal.R;
+import com.cw.videopal.note.Note;
+import com.cw.videopal.util.image.UtilImage;
 
 //Video Async Task for applying MediaMetadataRetriever
 //Note: setDataSource could hang up system for a long time when accessing remote content
@@ -47,14 +47,14 @@ public class AsyncTaskVideoBitmap extends AsyncTask<String,Integer,String>
 		 mPictureUri = picString;
 		 mImageView = view;
 		 mProgressBar = progressBar;
-		 System.out.println("AsyncTaskVideoBitmap constructor");
+//		 System.out.println("AsyncTaskVideoBitmap constructor");
 	 }	 
 	 
 	 @Override
 	 protected void onPreExecute() 
 	 {
 		 super.onPreExecute();
-		 System.out.println("AsyncTaskVideoBitmap / _onPreExecute");
+//		 System.out.println("AsyncTaskVideoBitmap / _onPreExecute");
 		 mImageView.setVisibility(View.GONE);
 		 mProgressBar.setProgress(0);
 		 mProgressBar.setVisibility(View.VISIBLE);
@@ -63,7 +63,7 @@ public class AsyncTaskVideoBitmap extends AsyncTask<String,Integer,String>
 	 @Override
 	 protected String doInBackground(String... params) 
 	 {
-		 System.out.println("AsyncTaskVideoBitmap / _doInBackground");
+//		 System.out.println("AsyncTaskVideoBitmap / _doInBackground");
 		 if(Note.isPagerActive)
 		 {
 			if(this != null)
@@ -111,7 +111,7 @@ public class AsyncTaskVideoBitmap extends AsyncTask<String,Integer,String>
 	 // This is executed in the context of the main GUI thread
 	 protected void onPostExecute(String result)
 	 {
-		 System.out.println("AsyncTaskVideoBitmap / _onPostExecute");
+//		 System.out.println("AsyncTaskVideoBitmap / _onPostExecute");
 		 mProgressBar.setVisibility(View.GONE);
 		 mImageView.setVisibility(View.VISIBLE);
 		 

@@ -65,7 +65,7 @@ public class UtilImage_bitmapLoader
 								  DisplayImageOptions options,
 								  Activity mAct )
 	{
-		System.out.println("UtilImage_bitmapLoader");
+//		System.out.println("UtilImage_bitmapLoader");
 
  	    setLoadingListeners();
 	    mPicImageView = picImageView;
@@ -74,12 +74,12 @@ public class UtilImage_bitmapLoader
 		Bitmap bmVideoIcon = BitmapFactory.decodeResource(mAct.getResources(), R.drawable.ic_media_play);
 		Uri imageUri = Uri.parse(pictureUriInDB);
 		String pictureUri = imageUri.toString();
-		System.out.println("UtilImage_bitmapLoader / _constructor / pictureUri = " + pictureUri);
+//		System.out.println("UtilImage_bitmapLoader / _constructor / pictureUri = " + pictureUri);
 
 		// 1 for image check
 		if (UtilImage.hasImageExtension(pictureUri,mAct)||
 		 	pictureUri.contains("drive.google")){
-			System.out.println("UtilImage_bitmapLoader constructor / has image extension");
+//			System.out.println("UtilImage_bitmapLoader constructor / has image extension");
 
 			// for Google Drive picture Uri
 			if(pictureUri.contains("drive.google")) {
@@ -115,7 +115,7 @@ public class UtilImage_bitmapLoader
 			// for local
 			if(!pictureUri.startsWith("http") && (path != null))
 			{
-				System.out.println("UtilImage_bitmapLoader constructor / local");
+//				System.out.println("UtilImage_bitmapLoader constructor / local");
 				thumbnail = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Video.Thumbnails.MICRO_KIND);
 
 				// check if video thumb nail exists
@@ -142,7 +142,7 @@ public class UtilImage_bitmapLoader
 
 				}
 			} else { // for remote
-				System.out.println("UtilImage_bitmapLoader constructor / remote");
+//				System.out.println("UtilImage_bitmapLoader constructor / remote");
 				// refer to
 				// http://android-developers.blogspot.tw/2009/05/painless-threading.html
 				mVideoAsyncTask = new AsyncTaskVideoBitmap(mAct, pictureUri, mPicImageView, mProgressBar);
@@ -175,7 +175,7 @@ public class UtilImage_bitmapLoader
 					public void onResourceReady(
 							Bitmap resource,
 							Transition<? super Bitmap> transition) {
-						System.out.println("UtilImage_bitmapLoader / _onResourceReady");
+//						System.out.println("UtilImage_bitmapLoader / _onResourceReady");
 
 //                      Drawable drawable = new BitmapDrawable(act.getResources(), resource);
 //						Drawable drawable = getScaledDrawable(act,resource,0.5f,0.5f);

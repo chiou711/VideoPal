@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.cw.videopal.R;
@@ -48,8 +47,6 @@ public class Page_recycler extends Fragment implements OnStartDragListener {
     RecyclerView.LayoutManager layoutMgr;
     private int page_pos;
     public static int mCurrPlayPosition;
-    public static int mHighlightPosition;
-    public SeekBar seekBarProgress;
     public AppCompatActivity act;
 
     public PageAdapter_recycler itemAdapter;
@@ -133,14 +130,18 @@ public class Page_recycler extends Fragment implements OnStartDragListener {
         }
     }
 
-    private void fillData()
+    private void fillData()//??? why position 0 always after using multi-tasks
     {
         System.out.println("Page_recycler / _fillData / page_tableId = " + page_tableId);
-        int focusTableId = Pref.getPref_focusView_page_tableId(act);
-        int diff = Math.abs(focusTableId - page_tableId);
-        if(diff <= 1) {
-            itemAdapter = new PageAdapter_recycler(page_pos, page_tableId, this);
+//        int focusTableId = Pref.getPref_focusView_page_tableId(act);
+//        int diff = Math.abs(focusTableId - page_tableId);
+        ///cw do not load unnecessary page
+//        int diff = Math.abs(page_pos - TabsHost.getFocus_tabPos());
+//        if(diff <= 1)
+        {
+                itemAdapter = new PageAdapter_recycler(page_pos, page_tableId, this);
             // Set PageAdapter_recycler as the adapter for RecyclerView.
+            System.out.println("Page_recycler / _fillData / set new Adapter / page_pos = " + page_pos);
             recyclerView.setAdapter(itemAdapter);
         }
     }
