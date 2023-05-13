@@ -170,6 +170,11 @@ public class PageAdapter_recycler extends RecyclerView.Adapter<PageAdapter_recyc
     	int position = holder.getAdapterPosition();
 //        System.out.println("PageAdapter_recycler / _onBindViewHolder / position = " + position);
 
+	    // do not load unnecessary page items
+	    int diff = Math.abs(page_pos - TabsHost.getFocus_tabPos());
+        if(diff > 1)
+			return;
+
         // style
 	    style = dbFolder.getPageStyle(page_pos, true);
 

@@ -294,13 +294,13 @@ public class TabsHost extends AppCompatDialogFragment implements TabLayout.OnTab
         Page_recycler page = mTabsPagerAdapter.fragmentList.get(getFocus_tabPos());
 
         // add for update page item view
-        if((page != null) && (page.itemAdapter != null))
-        {
+        if((page != null) && (page.itemAdapter != null)){
             page.itemAdapter.notifyDataSetChanged();
             System.out.println("TabsHost / _onTabSelected / notifyDataSetChanged ");
+        } else {
+            System.out.println("TabsHost / _onTabSelected / not notifyDataSetChanged / reloadCurrentPage");
+            reloadCurrentPage();
         }
-        else
-            System.out.println("TabsHost / _onTabSelected / not notifyDataSetChanged ");
 
         // call onCreateOptionsMenu
         MainAct.mAct.invalidateOptionsMenu();
@@ -442,8 +442,8 @@ public class TabsHost extends AppCompatDialogFragment implements TabLayout.OnTab
         firstPos_pageId = id;
     }
 
-    public static void reloadCurrentPage()
-    {
+    // base on focus tab position to reload current page
+    public static void reloadCurrentPage(){
         System.out.println("TabsHost / _reloadCurrentPage");
         int pagePos = getFocus_tabPos();
         mViewPager.setAdapter(mTabsPagerAdapter);
