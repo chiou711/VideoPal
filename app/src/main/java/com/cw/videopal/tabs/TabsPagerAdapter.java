@@ -43,8 +43,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
         dbFolder = new DB_folder(act, folderTableId);
     }
 
-    public Page_recycler getItem(int position)
-    {
+    public Page_recycler getItem(int position){
         return fragmentList.get(position);
     }
 

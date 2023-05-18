@@ -563,6 +563,7 @@ public class MainAct extends AppCompatActivity implements FragmentManager.OnBack
                 if((db_drawer.getFoldersCount(true) == 0) ||
                    (db_folder.getPagesCount(true) == 0)      )
                 {
+//                    System.out.println("MainAct / _initActionBar_home / click to popBackStack1");
                     finish();
                     Intent intent  = new Intent(mAct,MainAct.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -660,7 +661,7 @@ public class MainAct extends AppCompatActivity implements FragmentManager.OnBack
 
                 if (!mAct.isDestroyed()) {
                     System.out.println("MainAct / _onResumeFragments / mAct is not Destroyed()");
-                    openFolder();
+//                    openFolder(); //improve Pause_Resume UI
                 } else
                     System.out.println("MainAct / _onResumeFragments / mAct is Destroyed()");
 //            }
@@ -731,6 +732,7 @@ public class MainAct extends AppCompatActivity implements FragmentManager.OnBack
     }
 
     void doBackKeyEvent(){
+//        System.out.println("MainAct / _doBackKeyEvent");
         if (onBackPressedListener != null){
             DB_drawer dbDrawer = new DB_drawer(this);
             int foldersCnt = dbDrawer.getFoldersCount(true);
@@ -756,6 +758,7 @@ public class MainAct extends AppCompatActivity implements FragmentManager.OnBack
     }
 
 
+    // implements FragmentManager.OnBackStackChangedListener
     @Override
     public void onBackStackChanged() {
         int backStackEntryCount = mFragmentManager.getBackStackEntryCount();
@@ -772,7 +775,11 @@ public class MainAct extends AppCompatActivity implements FragmentManager.OnBack
             if(mFolder.adapter!=null)
                 mFolder.adapter.notifyDataSetChanged();
 
-            configLayoutView();
+//            configLayoutView();//improve Pause_Resume UI
+
+            // new drawer
+            drawer = new Drawer(this);
+            drawer.initDrawer();
 
             drawer.drawerToggle.syncState(); // make sure toggle icon state is correct
         }

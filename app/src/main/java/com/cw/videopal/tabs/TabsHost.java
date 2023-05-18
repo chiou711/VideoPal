@@ -61,16 +61,12 @@ public class TabsHost extends AppCompatDialogFragment implements TabLayout.OnTab
     public static TabsPagerAdapter mTabsPagerAdapter;
     public static int mFocusPageTableId;
     public static int mFocusTabPos;
-
     public static int lastPageTableId;
-
     public static int firstPos_pageId;
-
     public static boolean isDoingMarking;
 //    private AdView adView;
 
-    public TabsHost()
-    {
+    public TabsHost(){
 //        System.out.println("TabsHost / construct");
     }
 
@@ -111,6 +107,11 @@ public class TabsHost extends AppCompatDialogFragment implements TabLayout.OnTab
 
         // view pager
         mViewPager = (ViewPager2) rootView.findViewById(R.id.tabs_pager);
+
+        ///cw workaround of exception
+        //java.lang.IllegalStateException: Fragment no longer exists for key f#0: unique id
+        // ref https://stackoverflow.com/questions/59486504/fragment-no-longer-exists-for-key-fragmentstateadapter-with-viewpager2
+        mViewPager.setSaveEnabled(false);
 
         // mTabsPagerAdapter
         mTabsPagerAdapter = new TabsPagerAdapter(MainAct.mAct);
@@ -282,6 +283,10 @@ public class TabsHost extends AppCompatDialogFragment implements TabLayout.OnTab
         // TODO
         //  note: tab position is kept after importing new XML, how to change it?
         setFocus_tabPos(tab.getPosition());
+
+        //improve Pause_Resume UI
+        if(mTabsPagerAdapter == null)
+            return;
 
         // keep focus view page table Id
         int pageTableId = mTabsPagerAdapter.dbFolder.getPageTableId(getFocus_tabPos(), true);
