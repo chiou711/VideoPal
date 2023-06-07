@@ -469,9 +469,6 @@ public class Note extends AppCompatActivity
 			// keep play video position
 			mPlayVideoPositionOfInstance = UtilVideo.mPlayVideoPosition;
 			System.out.println("Note / _onPause / mPlayVideoPositionOfInstance = " + mPlayVideoPositionOfInstance);
-
-			if(UtilVideo.mVideoPlayer != null)
-				VideoPlayer.stopVideo();
 		}
 
 		NoteUi.cancel_UI_callbacks();

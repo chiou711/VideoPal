@@ -35,7 +35,6 @@ import com.cw.videopal.tabs.TabsHost;
 import com.cw.videopal.util.Util;
 import com.cw.videopal.util.image.UtilImage;
 import com.cw.videopal.util.video.UtilVideo;
-import com.cw.videopal.util.video.VideoPlayer;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
@@ -336,15 +335,13 @@ public class NoteUi
 					public void onStartTrackingTouch(SeekBar seekBar)
                     {
 						System.out.println("NoteUi / _onStartTrackingTouch");
-						if( (UtilVideo.mVideoPlayer == null)  && (UtilVideo.mVideoView != null))
-						{
+						if(UtilVideo.mVideoView != null){
 							if(Build.VERSION.SDK_INT >= 16)
 								UtilVideo.mVideoView.setBackground(null);
 							else
 								UtilVideo.mVideoView.setBackgroundDrawable(null);
 
 							UtilVideo.mVideoView.setVisibility(View.VISIBLE);
-							UtilVideo.mVideoPlayer = new VideoPlayer(act,pager,strPicture);
 							UtilVideo.mVideoView.seekTo(UtilVideo.mPlayVideoPosition);
 						}
 					}
@@ -379,8 +376,7 @@ public class NoteUi
 						if( UtilVideo.mVideoView != null  )
 						{
 							int mPlayVideoPosition = (int) (((float)(videoFileLength_inMilliSeconds / 100)) * seekBar.getProgress());
-							if(UtilVideo.mVideoPlayer != null)
-								UtilVideo.mVideoView.seekTo(mPlayVideoPosition);
+							UtilVideo.mVideoView.seekTo(mPlayVideoPosition);
                             if(handler != null)
                                 handler.removeCallbacks(runnableHideUi);
                             tempShow_picViewUI(3002,strPicture); // for 3 seconds, _onProgressChanged

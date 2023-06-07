@@ -34,7 +34,7 @@ import com.cw.videopal.R;
 import com.cw.videopal.db.DB_folder;
 import com.cw.videopal.db.DB_page;
 import com.cw.videopal.main.MainAct;
-import com.cw.videopal.note.Note;
+import com.cw.videopal.note.Note_cast;
 import com.cw.videopal.note_edit.Note_edit;
 import com.cw.videopal.page.item_touch_helper.ItemTouchHelperAdapter;
 import com.cw.videopal.page.item_touch_helper.ItemTouchHelperViewHolder;
@@ -323,15 +323,21 @@ public class PageAdapter_recycler extends RecyclerView.Adapter<PageAdapter_recyc
         viewHolder.btnViewNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TabsHost.getCurrentPage().mCurrPlayPosition = position;
+                Page_recycler.mCurrPlayPosition = position;
                 DB_page db_page = new DB_page(mAct,TabsHost.getCurrentPageTableId());
                 int count = db_page.getNotesCount(true);
                 if(position < count){
 					///cw: apply Note class
                     Intent intent;
-	                intent = new Intent(mAct, Note.class);///cw pager cast
-//	                intent = new Intent(mAct, Note_cast.class); ///cw cast without pager
-                    intent.putExtra("POSITION", position);
+
+	                //cast with pager
+	                //??? TBD: Enable pager
+//	                intent = new Intent(mAct, Note.class);
+
+	                //simple cast without pager
+	                intent = new Intent(mAct, Note_cast.class);
+
+	                intent.putExtra("POSITION", position);
                     mAct.startActivity(intent);
 
 	                // ref: https://github.com/googlecast/CastVideos-android

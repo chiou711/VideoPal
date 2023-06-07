@@ -60,7 +60,6 @@ public class Note_adapter extends FragmentStatePagerAdapter
 	PlayerManager playerManager;
 	PlayerManager.Listener listener;
 
-
     public Note_adapter(ViewPager viewPager, AppCompatActivity activity,CastContext _castContext,
 		    PlayerManager _playerManager,PlayerManager.Listener _listener)
     {
@@ -253,7 +252,7 @@ public class Note_adapter extends FragmentStatePagerAdapter
 			System.out.println("Note_adapter / _setPrimaryItem / pictureStr = " + pictureStr);
 
 			// for video view
-			if (!Note.isTextMode() ){
+			if (!Util.isEmptyString(pictureStr)){
 				// stop last video view running
 				if (mLastPosition != -1){
 					String tagVideoStr = "current" + mLastPosition + "videoView";
@@ -269,7 +268,6 @@ public class Note_adapter extends FragmentStatePagerAdapter
 					exoPlayer_gDrive(exoplayer_view,pictureStr); //@@@ cast failed
 				else
 //					localExoPlayer(exoplayer_view,pictureStr);
-					///cw
 					exoPlayer_cast(exoplayer_view,pictureStr,titleStr);
 			}
 
@@ -351,6 +349,7 @@ public class Note_adapter extends FragmentStatePagerAdapter
 
 		// player inside player manager
 		playerManager = new PlayerManager(act,listener,exoplayer_view,castContext,pictureStr,titleStr);
+		UtilVideo.exoPlayer = playerManager.currentPlayer;
 	}
 
 	// local ExoPlayer

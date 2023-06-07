@@ -67,7 +67,7 @@ import androidx.core.content.res.ResourcesCompat;
 
   private Tracks lastSeenTracks;
   private int currentItemIndex;
-  private Player currentPlayer;
+  Player currentPlayer;
   String pictureUrl;
   String titleStr;
 

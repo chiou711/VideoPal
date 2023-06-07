@@ -16,18 +16,6 @@
 
 package com.cw.videopal.note_edit;
 
-import com.cw.videopal.db.DB_folder;
-import com.cw.videopal.main.MainAct;
-import com.cw.videopal.R;
-import com.cw.videopal.db.DB_page;
-import com.cw.videopal.tabs.TabsHost;
-import com.cw.videopal.util.image.TouchImageView;
-import com.cw.videopal.util.image.UtilImage_bitmapLoader;
-import com.cw.videopal.util.ColorSet;
-import com.cw.videopal.util.preferences.Pref;
-import com.cw.videopal.util.uil.UilCommon;
-import com.cw.videopal.util.Util;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -44,6 +32,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.cw.videopal.R;
+import com.cw.videopal.db.DB_folder;
+import com.cw.videopal.db.DB_page;
+import com.cw.videopal.main.MainAct;
+import com.cw.videopal.tabs.TabsHost;
+import com.cw.videopal.util.ColorSet;
+import com.cw.videopal.util.Util;
+import com.cw.videopal.util.image.TouchImageView;
+import com.cw.videopal.util.image.UtilImage_bitmapLoader;
+import com.cw.videopal.util.preferences.Pref;
+import com.cw.videopal.util.uil.UilCommon;
 
 public class Note_edit_ui {
 	private ImageView picImageView;
@@ -352,6 +352,11 @@ public class Note_edit_ui {
 
 			// picture Uri
 			String strPictureUriEdit = dB_page.getNotePictureUri_byId(rowId);
+
+			// get real path at local device storage
+			if(strPictureUriEdit.startsWith("content") )
+				strPictureUriEdit = Util.getLocalRealPathByUri(act,Uri.parse(strPictureUriEdit));
+
 			pictureUriEditText.setText(strPictureUriEdit);
 			pictureUriEditText.setSelection(strPictureUriEdit.length());
 		}

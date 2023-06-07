@@ -343,7 +343,6 @@ public class UtilVideo
 		return bitmapDrawable;
 	}
 	
-	public static VideoPlayer mVideoPlayer; //todo Memory leak?
 	public static Player exoPlayer;
 
 	// Play or Pause video
@@ -367,14 +366,6 @@ public class UtilVideo
 					mVideoView.setBackgroundDrawable(null);
 
 				mVideoView.setVisibility(View.VISIBLE);
-
-				//start a new Video player instance
-				mVideoPlayer = new VideoPlayer(mAct,pager,picString);
-			}
-			else if(mVideoPlayer != null)
-			{
-				System.out.println("UtilVideo / _playOrPauseVideo / mVideoPlayer is not null");
-				mVideoPlayer.goOnVideo(pager);
 			}
 		}
 	}
@@ -440,7 +431,7 @@ public class UtilVideo
     {
     	boolean isVideo = false;
     	String fn = file.getName().toLowerCase(Locale.getDefault());
-    	if(	fn.endsWith("3gp") || fn.endsWith("mp4") ||
+    	if(	fn.endsWith("3gp") || fn.endsWith("mp4") || fn.endsWith("avi") ||
     		fn.endsWith("ts") || fn.endsWith("webm") || fn.endsWith("mkv")  ) 
 	    	isVideo = true;
 	    
@@ -455,7 +446,7 @@ public class UtilVideo
     	{
 	    	String fn = string.toLowerCase(Locale.getDefault());
 //	    	System.out.println("UtilVideo / _hasVideoExtension / fn 1 = " + fn);
-	    	if(	fn.endsWith("3gp") || fn.endsWith("mp4") ||
+	    	if(	fn.endsWith("3gp") || fn.endsWith("mp4") || fn.endsWith("avi") ||
 	    		fn.endsWith("ts") || fn.endsWith("webm") || fn.endsWith("mkv")  ) 
 		    	hasVideo = true;
     	}
@@ -467,7 +458,7 @@ public class UtilVideo
     		String fn = Util.getDisplayNameByUriString(string, act);
 	    	fn = fn.toLowerCase(Locale.getDefault());
 //	    	System.out.println("UtilVideo / _hasVideoExtension / fn 2 = " + fn);
-	    	if(	fn.endsWith("3gp") || fn.endsWith("mp4") ||
+	    	if(	fn.endsWith("3gp") || fn.endsWith("mp4") || fn.endsWith("avi") ||
 	    		fn.endsWith("ts") || fn.endsWith("webm") || fn.endsWith("mkv")  ) 
 		    	hasVideo = true;    		
     	}

@@ -16,18 +16,18 @@
 
 package com.cw.videopal.util.video;
 
-import java.io.IOException;
-
-import com.cw.videopal.note.Note;
-import com.cw.videopal.note.NoteUi;
-import com.cw.videopal.util.Util;
-
 import android.app.Activity;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.MediaController;
 import android.widget.Toast;
+
+import com.cw.videopal.note.Note;
+import com.cw.videopal.note.NoteUi;
+import com.cw.videopal.util.Util;
+
+import java.io.IOException;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
@@ -96,7 +96,7 @@ public class VideoPlayer
 		
 		if(mVideoHandler != null)
 		{
-			mVideoHandler.removeCallbacks(mRunPlayVideo); 
+			mVideoHandler.removeCallbacks(mRunPlayVideo);
 		}
 		
 		if((UtilVideo.mVideoView != null) && UtilVideo.mVideoView.isPlaying())
@@ -105,7 +105,11 @@ public class VideoPlayer
 		}
 
 		UtilVideo.mVideoView = null;
-		UtilVideo.mVideoPlayer = null;
+
+		if(UtilVideo.exoPlayer.isPlaying())
+			UtilVideo.exoPlayer.stop();
+
+		UtilVideo.exoPlayer = null;
 
 		AsyncTaskVideoBitmapPager.mVideoUrl = null;
 		UtilVideo.setVideoState(UtilVideo.VIDEO_AT_STOP);
