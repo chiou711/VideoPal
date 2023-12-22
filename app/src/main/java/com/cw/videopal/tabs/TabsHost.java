@@ -279,14 +279,13 @@ public class TabsHost extends AppCompatDialogFragment implements TabLayout.OnTab
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
         System.out.println("TabsHost / _onTabSelected / tab position: " + tab.getPosition());
+        doOnTabReselected(tab);
+    }
 
+    public void doOnTabReselected(TabLayout.Tab tab) {
         // TODO
         //  note: tab position is kept after importing new XML, how to change it?
         setFocus_tabPos(tab.getPosition());
-
-        //improve Pause_Resume UI
-        if(mTabsPagerAdapter == null)
-            return;
 
         // keep focus view page table Id
         int pageTableId = mTabsPagerAdapter.dbFolder.getPageTableId(getFocus_tabPos(), true);
@@ -319,7 +318,7 @@ public class TabsHost extends AppCompatDialogFragment implements TabLayout.OnTab
         // set long click listener
         setLongClickListener();
 
-        TabsHost.showFooter(MainAct.mAct);
+        showFooter(MainAct.mAct);
 
         isDoingMarking = false;
     }
@@ -330,6 +329,7 @@ public class TabsHost extends AppCompatDialogFragment implements TabLayout.OnTab
 
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
+        doOnTabReselected(tab);
     }
 
     @Override
@@ -384,7 +384,7 @@ public class TabsHost extends AppCompatDialogFragment implements TabLayout.OnTab
 
         //  Remove fragments
         if(!MainAct.mAct.isDestroyed())
-            removeTabs();//Put here will solve onBackStackChanged issue (no Page_recycler / _onCreate)
+            removePages();//Put here will solve onBackStackChanged issue (no Page_recycler / _onCreate)
 
 //        if (adView != null) {
 //            adView.pause();
@@ -705,11 +705,8 @@ public class TabsHost extends AppCompatDialogFragment implements TabLayout.OnTab
     }
 
 
-    public static void removeTabs()
-    {
-        System.out.println("TabsHost / _removeTabs");
-    	if(TabsHost.mTabsPagerAdapter == null)
-    		return;
+    public static void removePages() {
+        System.out.println("TabsHost / _removePages");
 
         ArrayList<Page_recycler> fragmentList = TabsHost.mTabsPagerAdapter.fragmentList;
         if( (fragmentList != null) &&
@@ -722,10 +719,9 @@ public class TabsHost extends AppCompatDialogFragment implements TabLayout.OnTab
 
             for (int i = 0; i < fragmentList.size(); i++) {
                 System.out.println("TabsHost / _removeTabs / i = " + i);
-                TabsHost.mTabsPagerAdapter.fragmentList.get(i).itemAdapter = null;
+                mTabsPagerAdapter.fragmentList.get(i).itemAdapter = null;
                 MainAct.mAct.getSupportFragmentManager().beginTransaction().remove(fragmentList.get(i)).commit();
             }
-            mTabsPagerAdapter = null;
         }
     }
 

@@ -193,10 +193,7 @@ public class MainAct extends AppCompatActivity implements FragmentManager.OnBack
                         .setPositiveButton(R.string.confirm_dialog_button_yes, click_sample_Yes)
                         .setNegativeButton(R.string.confirm_dialog_button_no, click_sample_No);
                 builder.create().show();
-            } else {
-                doCreate();
             }
-
         }
         else if((Define.DEFAULT_CONTENT == Define.BY_INITIAL_TABLES) && (Define.INITIAL_FOLDERS_COUNT > 0))
         {
@@ -656,14 +653,17 @@ public class MainAct extends AppCompatActivity implements FragmentManager.OnBack
         else {
 //		// fix: home button failed after power off/on in Config fragment
 //            if (bEULA_accepted) {
-	            if(mFragmentManager != null)
+	            if(mFragmentManager != null) {
                     mFragmentManager.popBackStack();
+                }
 
-                if (!mAct.isDestroyed()) {
+//                if (!mAct.isDestroyed())
+                {
                     System.out.println("MainAct / _onResumeFragments / mAct is not Destroyed()");
-//                    openFolder(); //improve Pause_Resume UI
-                } else
-                    System.out.println("MainAct / _onResumeFragments / mAct is Destroyed()");
+                    doCreate();
+                }
+//                else
+//                    System.out.println("MainAct / _onResumeFragments / mAct is Destroyed()");
 //            }
         }
     }

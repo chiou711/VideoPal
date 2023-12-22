@@ -18,6 +18,7 @@
 package com.cw.videopal.page;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,7 +48,7 @@ public class Page_recycler extends Fragment implements OnStartDragListener {
     RecyclerView.LayoutManager layoutMgr;
     private int page_pos;
     public static int mCurrPlayPosition;
-    public AppCompatActivity act;
+    public Activity act;
 
     public PageAdapter_recycler itemAdapter;
     private ItemTouchHelper itemTouchHelper;
@@ -64,6 +65,7 @@ public class Page_recycler extends Fragment implements OnStartDragListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        act = getActivity();
     }
 
     @Override
@@ -73,6 +75,19 @@ public class Page_recycler extends Fragment implements OnStartDragListener {
         page_pos = args.getInt("page_pos");
         page_tableId = args.getInt("page_table_id");
         System.out.println("Page_recycler / _onCreateView / page_tableId = " + page_tableId);
+
+        int focusTableId = Pref.getPref_focusView_page_tableId(act);
+        System.out.println("Page_recycler / _onCreateView / focusTableId = " + focusTableId);
+        int diff = Math.abs(focusTableId - page_tableId);
+        if(diff > 1) {
+            System.out.println("Page_recycler / _onCreateView / return");
+//            return null;
+            // apply ViewPager2 can not use this, otherwise it can cause exception below
+            // java.lang.IllegalStateException:
+            // Adding and removing callbacks during dispatch to callbacks is not supported
+            // at androidx.viewpager2.widget.CompositeOnPageChangeCallback.throwCallbackListModifiedWhileInUse
+        } else
+            System.out.println("Page_recycler / _onCreateView / go on");
 
         View rootView = inflater.inflate(R.layout.recycler_view_frag, container, false);
         act = MainAct.mAct;
@@ -124,7 +139,8 @@ public class Page_recycler extends Fragment implements OnStartDragListener {
     public void onResume() {
 //        System.out.println("Page_recycler / _onResume / page_tableId = " + page_tableId);
         super.onResume();
-        if(Pref.getPref_focusView_page_tableId(MainAct.mAct) == page_tableId) {
+        if( (recyclerView!= null) &&
+            (Pref.getPref_focusView_page_tableId(MainAct.mAct) == page_tableId) ){
 //            System.out.println("Page_recycler / _onResume / resume_listView_vScroll");
             TabsHost.resume_listView_vScroll(recyclerView);
         }
