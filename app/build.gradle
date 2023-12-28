@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply from: '../constants.gradle'
 android {
-    compileSdk 33
+    compileSdk 34
 
 //    lintOptions {
 //        checkReleaseBuilds false
@@ -13,11 +13,11 @@ android {
     defaultConfig {
         applicationId "com.cw.videopal"
         minSdkVersion 21
-        targetSdkVersion 33
+        targetSdkVersion 34
         multiDexEnabled true
         //noinspection AccidentalOctal
-        versionCode 00001
-        versionName "0.00.01"
+        versionCode 00002
+        versionName "0.00.02"
     }
 
     buildTypes {
@@ -48,7 +48,8 @@ android {
         }
     }
 
-    buildToolsVersion '33.0.0 rc1'
+    buildToolsVersion '34.0.0'
+    namespace 'com.cw.videopal'
 
     //https://stackoverflow.com/questions/44342455/more-than-one-file-was-found-with-os-independent-path-meta-inf-license
 //    packagingOptions {

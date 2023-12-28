@@ -27,7 +27,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.cw.videopal.R;
-import com.cw.videopal.note.Note;
 import com.cw.videopal.util.image.UtilImage;
 
 //Video Async Task for applying MediaMetadataRetriever
@@ -61,31 +60,26 @@ public class AsyncTaskVideoBitmap extends AsyncTask<String,Integer,String>
 	 } 
 	 
 	 @Override
-	 protected String doInBackground(String... params) 
-	 {
+	 protected String doInBackground(String... params){
 //		 System.out.println("AsyncTaskVideoBitmap / _doInBackground");
-		 if(Note.isPagerActive)
-		 {
-			if(this != null)
-			{
-				System.out.println("NoteFragment.mVideoAsyncTask != null");
-				
-				if(this.isCancelled())
-					System.out.println("NoteFragment.mVideoAsyncTask.isCancelled()");
-				else
-					System.out.println("NoteFragment.mVideoAsyncTask is not Cancelled()");
-				
-				 if( (this != null) && (!this.isCancelled()) )
-				 {
-					 System.out.println("    NoteFragment.mVideoAsyncTask cancel");
-					 this.cancel(true);
-					 return "cancel";
-				 }				
-			}
+		if(this != null){
+			System.out.println("NoteFragment.mVideoAsyncTask != null");
+
+			if(this.isCancelled())
+				System.out.println("NoteFragment.mVideoAsyncTask.isCancelled()");
 			else
-				System.out.println("NoteFragment.mVideoAsyncTask = null");
-		 }
-		 
+				System.out.println("NoteFragment.mVideoAsyncTask is not Cancelled()");
+
+			 if( (this != null) && (!this.isCancelled()) )
+			 {
+				 System.out.println("    NoteFragment.mVideoAsyncTask cancel");
+				 this.cancel(true);
+				 return "cancel";
+			 }
+		}
+		else
+			System.out.println("NoteFragment.mVideoAsyncTask = null");
+
 		 mmr = new MediaMetadataRetriever();
 		 try
 		 {

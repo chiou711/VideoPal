@@ -16,16 +16,6 @@
 
 package com.cw.videopal.operation.slideshow;
 
-import com.cw.videopal.main.MainAct;
-import com.cw.videopal.R;
-import com.cw.videopal.note.Note;
-import com.cw.videopal.util.image.UtilImage;
-import com.cw.videopal.util.image.UtilImage_bitmapLoader;
-import com.cw.videopal.util.uil.UilCommon;
-import com.cw.videopal.util.Util;
-
-import android.content.BroadcastReceiver;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,10 +26,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cw.videopal.R;
+import com.cw.videopal.main.MainAct;
+import com.cw.videopal.util.Util;
+import com.cw.videopal.util.image.UtilImage;
+import com.cw.videopal.util.image.UtilImage_bitmapLoader;
+import com.cw.videopal.util.uil.UilCommon;
+
 import androidx.fragment.app.FragmentActivity;
 
-public class SlideshowPlayer extends FragmentActivity
-{
+public class SlideshowPlayer extends FragmentActivity {
 	private String STATE_SLIDE_INDEX = "STATE_SLIDE_INDEX";
 	private String STATE_SLIDE_ENABLE = "STATE_SLIDE_ENABLE";
 	private int currIndex; // current index of image to display
@@ -51,12 +47,10 @@ public class SlideshowPlayer extends FragmentActivity
 
 	private SlideshowInfo showInfo; // slide show being played
 	private Handler slideHandler; // used to update the slide show
-	private BroadcastReceiver mReceiver;
-   
+
 	// initializes the SlideshowPlayer Activity
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState)	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.slideshow_player);
       
@@ -80,20 +74,13 @@ public class SlideshowPlayer extends FragmentActivity
 		showInfo = MainAct.slideshowInfo;
    	  	slideHandler = new Handler(); // create handler to control showInfo
 
-		// intent filter
-//   	  	IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
-//   	  	filter.addAction(Intent.ACTION_SCREEN_OFF);
-//   	  	mReceiver = new SlideshowScreenReceiver();
-//   	  	registerReceiver(mReceiver, filter);
-
 		// preference of switch time
 		SharedPreferences pref_sw_time = MainAct.mAct.getSharedPreferences("slideshow_sw_time", 0);
 		switch_time = Integer.valueOf(pref_sw_time.getString("KEY_SLIDESHOW_SW_TIME","5"));
 	}
    
 	@Override
-	protected void onRestart()
-	{
+	protected void onRestart(){
 		System.out.println("SlideshowPlayer / _onRestart ");
 		super.onRestart();
 	}   
@@ -101,15 +88,13 @@ public class SlideshowPlayer extends FragmentActivity
    
 	// called after onCreate and sometimes onStop
 	@Override
-	protected void onStart()
-	{
+	protected void onStart(){
 		System.out.println("SlideshowPlayer / _onStart ");
 		super.onStart();
 	}
 
 	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState)
-	{
+	protected void onRestoreInstanceState(Bundle savedInstanceState){
 		System.out.println("SlideshowPlayer / _onRestoreInstanceState ");
 		super.onRestoreInstanceState(savedInstanceState);
 
@@ -125,7 +110,6 @@ public class SlideshowPlayer extends FragmentActivity
 			itemView = findViewById(R.id.show_item);
 			imageView = (ImageView) findViewById(R.id.show_image);
 
-//			imageView.setOnClickListener(new View.OnClickListener() {
 			itemView.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
 					enableSlide = !enableSlide;
@@ -138,19 +122,18 @@ public class SlideshowPlayer extends FragmentActivity
 				}
 			});
 
-//			imageView.setOnLongClickListener(new View.OnLongClickListener(){
 			itemView.setOnLongClickListener(new View.OnLongClickListener(){
                 @Override
                 public boolean onLongClick(View v) {
-                    slideHandler.removeCallbacks(runSlideshow);
-                    finish();
-
-                    Intent intent;
-					viewHolder = showInfo.getShowItem(currIndex);
-					Integer position = viewHolder.position;
-                    intent = new Intent(SlideshowPlayer.this, Note.class);
-                    intent.putExtra("POSITION", position);
-                    startActivity(intent);
+//                    slideHandler.removeCallbacks(runSlideshow);
+//                    finish();
+//
+//                    Intent intent;
+//					viewHolder = showInfo.getShowItem(currIndex);
+//					Integer position = viewHolder.position;
+//                    intent = new Intent(SlideshowPlayer.this, Note_cast.class);
+//                    intent.putExtra("POSITION", position);
+//                    startActivity(intent);
                     return false;
                 }
             });
@@ -205,11 +188,9 @@ public class SlideshowPlayer extends FragmentActivity
 
 	// called when the Activity is destroyed
 	@Override
-	protected void onDestroy()
-	{
+	protected void onDestroy()	{
 		System.out.println("SlideshowPlayer / _onDestroy ");
 		super.onDestroy();
-//		unregisterReceiver(mReceiver);
 	}
 
     boolean enableSlide = true;
@@ -218,11 +199,9 @@ public class SlideshowPlayer extends FragmentActivity
      * Runnable: runSlideshow
      *
      */
-	private Runnable runSlideshow = new Runnable()
-	{
+	private Runnable runSlideshow = new Runnable()	{
 		@Override
-		public void run()
-		{
+		public void run()	{
 			//change index from current to next
 			if(!enableSlide)
 				return;
@@ -259,7 +238,6 @@ public class SlideshowPlayer extends FragmentActivity
 			imageView = (ImageView) findViewById(R.id.show_image);
 
 			//on Click listener
-//			imageView.setOnClickListener(new View.OnClickListener() {
 			itemView.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
 					enableSlide = !enableSlide;
@@ -272,19 +250,18 @@ public class SlideshowPlayer extends FragmentActivity
 			});
 
 			//on Long Click listener
-//			imageView.setOnLongClickListener(new View.OnLongClickListener() {
 			itemView.setOnLongClickListener(new View.OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
-					viewHolder = showInfo.getShowItem(currIndex);
-					Integer position = viewHolder.position;
-					slideHandler.removeCallbacks(runSlideshow);
-					finish();
-
-					Intent intent;
-					intent = new Intent(SlideshowPlayer.this, Note.class);
-					intent.putExtra("POSITION", position);
-					startActivity(intent);
+//					viewHolder = showInfo.getShowItem(currIndex);
+//					Integer position = viewHolder.position;
+//					slideHandler.removeCallbacks(runSlideshow);
+//					finish();
+//
+//					Intent intent;
+//					intent = new Intent(SlideshowPlayer.this, Note_cast.class);
+//					intent.putExtra("POSITION", position);
+//					startActivity(intent);
 					return false;
 				}
 			});

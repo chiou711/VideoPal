@@ -27,7 +27,6 @@ import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -49,9 +48,7 @@ import com.cw.videopal.util.image.UtilImage;
 import com.cw.videopal.util.preferences.Pref;
 import com.cw.videopal.util.server.WebService;
 import com.cw.videopal.util.uil.UilCommon;
-import com.cw.videopal.util.video.AsyncTaskVideoBitmapPager;
 import com.cw.videopal.util.video.UtilVideo;
-import com.cw.videopal.util.video.VideoPlayer;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ui.StyledPlayerView;
 import com.google.android.gms.cast.framework.CastButtonFactory;
@@ -61,14 +58,8 @@ import com.google.android.gms.dynamite.DynamiteModule;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.viewpager.widget.PagerAdapter;
 
 public class Note_cast extends AppCompatActivity implements  PlayerManager.Listener{
-
-    /**
-     * The pager adapter, which provides the pages to the view pager widget.
-     */
-    public static PagerAdapter mPagerAdapter;
 
     // DB
     public DB_page mDb_page;
@@ -79,10 +70,6 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
     static int mStyle;
 
     static SharedPreferences mPref_show_note_attribute;
-
-    Button editButton;
-    Button optionButton;
-    Button backButton;
 
     public AppCompatActivity act;
     public static int mPlayVideoPositionOfInstance;
@@ -120,11 +107,9 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 		// init video
 		UtilVideo.mPlayVideoPosition = 0;   // not played yet
 		mPlayVideoPositionOfInstance = 0;
-		AsyncTaskVideoBitmapPager.mRotationStr = null;
 
 		act = this;
 
-//        MainAct.mMediaBrowserCompat = null;
 	} //onCreate end
 
 	// Add to prevent resizing full screen picture,
@@ -133,62 +118,7 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
 		System.out.println("Note_cast / _onWindowFocusChanged");
-		///cw
-//		if (hasFocus && isPictureMode() )
-//			Util.setFullScreen(act);
 	}
-
-	// key event: 1 from bluetooth device 2 when notification bar dose not shown
-//	@Override
-//	public boolean onKeyDown(int keyCode, KeyEvent event) {
-//		int newPos;
-//		System.out.println("Note_cast / _onKeyDown / keyCode = " + keyCode);
-//		switch (keyCode) {
-//			case KeyEvent.KEYCODE_MEDIA_PREVIOUS: //88
-//				if(viewPager.getCurrentItem() == 0)
-//                    newPos = mPagerAdapter.getCount() - 1;//back to last one
-//				else
-//					newPos = NoteUi.getFocus_notePos()-1;
-//
-//				NoteUi.setFocus_notePos(newPos);
-//				viewPager.setCurrentItem(newPos);
-//
-//				return true;
-//
-//			case KeyEvent.KEYCODE_MEDIA_NEXT: //87
-//				if(viewPager.getCurrentItem() == (mPagerAdapter.getCount() - 1))
-//					newPos = 0;
-//				else
-//					newPos = NoteUi.getFocus_notePos() + 1;
-//
-//				NoteUi.setFocus_notePos(newPos);
-//				viewPager.setCurrentItem(newPos);
-//
-//				return true;
-//
-//			case KeyEvent.KEYCODE_MEDIA_PLAY: //126
-//				return true;
-//
-//			case KeyEvent.KEYCODE_MEDIA_PAUSE: //127
-//				return true;
-//
-//			case KeyEvent.KEYCODE_BACK:
-//                onBackPressed();
-//				return true;
-//
-//			case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
-//				return true;
-//
-//			case KeyEvent.KEYCODE_MEDIA_REWIND:
-//				return true;
-//
-//			case KeyEvent.KEYCODE_MEDIA_STOP:
-//				return true;
-//		}
-//		return false;
-//	}
-
-
 
 	void setLayoutView()
 	{
@@ -233,16 +163,10 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 	}
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
+	public void onActivityResult(int requestCode, int resultCode, Intent data){
 		super.onActivityResult(requestCode,resultCode,data);
 		System.out.println("Note_cast / _onActivityResult ");
-        if((requestCode==EDIT_CURRENT_VIEW) || (requestCode==MAIL_CURRENT_VIEW))
-        {
-			stopAV();
-        }
-		else if(requestCode == MailNotes.EMAIL)
-		{
+		if(requestCode == MailNotes.EMAIL){
 			Toast.makeText(act,R.string.mail_exit,Toast.LENGTH_SHORT).show();
 			// note: result code is always 0 (cancel), so it is not used
 			new DeleteFileAlarmReceiver(act,
@@ -250,7 +174,6 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 //						    		    System.currentTimeMillis() + 1000 * 10, // test: 10 seconds
 					                    MailNotes.mAttachmentFileName);
 		}
-
 		setOutline(act);
 	}
 
@@ -282,25 +205,9 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 			}
 			exoPlayer_cast2(pictureStr, titleStr);
 		}
-
 	}
 
 
-    //Refer to http://stackoverflow.com/questions/4434027/android-videoview-orientation-change-with-buffered-video
-	/***************************************************************
-	video play spec of Pause and Rotate:
-	1. Rotate: keep pause state
-	 pause -> rotate -> pause -> play -> continue
-
-	2. Rotate: keep play state
-	 play -> rotate -> continue play
-
-	3. Key guard: enable pause
-	 play -> key guard on/off -> pause -> play -> continue
-
-	4. Key guard and Rotate: keep pause
-	 play -> key guard on/off -> pause -> rotate -> pause
-	 ****************************************************************/
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 	    super.onConfigurationChanged(newConfig);
@@ -348,8 +255,6 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 			System.out.println("Note_cast / _onPause / mPlayVideoPositionOfInstance = " + mPlayVideoPositionOfInstance);
 		}
 
-		NoteUi.cancel_UI_callbacks();
-
 		// stop exoPlayer
 		UtilVideo.stopExoPlayer();
 
@@ -381,9 +286,7 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 	@Override
 	public void finish() {
 		System.out.println("Note_cast / _finish");
-
 		ViewGroup view = (ViewGroup) getWindow().getDecorView();
-//	    view.setBackgroundColor(getResources().getColor(color.background_dark)); // avoid white flash
 	    view.setBackgroundColor(getResources().getColor(R.color.bar_color)); // avoid white flash
 	    view.removeAllViews();
 
@@ -399,8 +302,7 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 	Menu mMenu;
 	// On Create Options Menu
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) 
-    {
+    public boolean onCreateOptionsMenu(Menu menu){
         super.onCreateOptionsMenu(menu);
 		System.out.println("Note_cast / _onCreateOptionsMenu");
 
@@ -447,21 +349,11 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 		System.out.println("Note_cast / _showSelectedView");
    		mIsViewModeChanged = false;
 
-        if(UtilVideo.mVideoView != null)
-        {
+        if(UtilVideo.mVideoView != null){
             // keep current video position for NOT text mode
 			mPositionOfChangeView = UtilVideo.mPlayVideoPosition;
             mIsViewModeChanged = true;
-
-            if(VideoPlayer.mVideoHandler != null)
-            {
-				System.out.println("Note_cast / _showSelectedView / just remove callbacks");
-                VideoPlayer.mVideoHandler.removeCallbacks(VideoPlayer.mRunPlayVideo);
-                if(UtilVideo.hasMediaControlWidget)
-                    VideoPlayer.cancelMediaController();
-            }
         }
-
     }
     
     public static int mPositionOfChangeView;
@@ -473,12 +365,6 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 		   						  .putString("KEY_PAGER_VIEW_MODE","PICTURE_ONLY")
 		   						  .apply();
     }
-    
-
-	public static void stopAV()	{
-		VideoPlayer.stopVideo();
-	}
-
 
 	@Override
 	public void onQueuePositionChanged(int previousIndex, int newIndex) {
@@ -580,7 +466,6 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 		}
 		System.out.println("Note_cast / exoPlayer_cast2 / pictureStr = " + pictureStr);
 
-//		UtilVideo.mCurrentPagerView = (View) object;
 		StyledPlayerView exoplayer_view = ((StyledPlayerView) findViewById(R.id.exoplayer_view2));
 
 		// player inside player manager
@@ -606,12 +491,6 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 					public void onResourceReady(
 							Bitmap resource,
 							Transition<? super Bitmap> transition) {
-//						System.out.println("UtilImage_bitmapLoader / _onResourceReady");
-
-//                      Drawable drawable = new BitmapDrawable(act.getResources(), resource);
-//						Drawable drawable = getScaledDrawable(act,resource,0.5f,0.5f);
-//						picImageView.setImageDrawable(drawable);
-
 						imageView.setImageBitmap(resource);
 					}
 
@@ -623,7 +502,6 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 					public void onLoadFailed(@Nullable Drawable errorDrawable) {
 						super.onLoadFailed(errorDrawable);
 						System.out.println("UtilImage_bitmapLoader / _onLoadFailed");
-//						cardView.setMainImage(act.getResources().getDrawable(R.drawable.movie));
 						imageView.setImageDrawable(act.getResources().getDrawable(R.drawable.ic_empty));
 					}
 				});
