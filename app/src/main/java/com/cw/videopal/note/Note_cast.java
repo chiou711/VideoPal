@@ -46,7 +46,7 @@ import com.cw.videopal.util.Util;
 import com.cw.videopal.util.image.TouchImageView;
 import com.cw.videopal.util.image.UtilImage;
 import com.cw.videopal.util.preferences.Pref;
-import com.cw.videopal.util.server.WebService;
+import com.cw.videopal.refplayer.server.WebService;
 import com.cw.videopal.util.uil.UilCommon;
 import com.cw.videopal.util.video.UtilVideo;
 import com.google.android.exoplayer2.C;

@@ -1,4 +1,4 @@
-package com.cw.videopal.util.server;
+package com.cw.videopal.refplayer.server;
 
 import android.app.IntentService;
 import android.content.Intent;

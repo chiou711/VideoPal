@@ -55,9 +55,9 @@
 			   <category android:name="android.intent.category.DEFAULT" />
 			   <data android:mimeType="text/*" />
 			</intent-filter>
-            <intent-filter android:priority="0">
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
-            </intent-filter>
+<!--            <intent-filter android:priority="0">-->
+<!--                <action android:name="android.intent.action.MEDIA_BUTTON" />-->
+<!--            </intent-filter>-->
         </activity>
 
         <activity android:name="com.cw.videopal.note_add.image.Note_addCameraImage"/>
@@ -68,14 +68,14 @@
         <activity android:name="com.cw.videopal.note_add.drawing.Note_drawingAct" />
         <activity android:name="com.cw.videopal.note_edit.Note_edit"
                   android:windowSoftInputMode="adjustPan"/>
-        <activity android:name="com.cw.videopal.note.Note"
-                  android:theme="@style/MyTheme"
-            	  android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
-            android:exported="true">
-            <intent-filter android:priority="0">
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
-            </intent-filter>
-        </activity>
+<!--        <activity android:name="com.cw.videopal.note.Note"-->
+<!--                  android:theme="@style/MyTheme"-->
+<!--            	  android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter android:priority="0">-->
+<!--                <action android:name="android.intent.action.MEDIA_BUTTON" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
         <activity android:name="com.cw.videopal.note.Note_cast"
             android:theme="@style/MyTheme"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
@@ -188,7 +188,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.cw.videopal.refplayer.VideoBrowserActivity"/>
         </activity>
-        <service android:name=".util.server.WebService" />
+        <service android:name=".refplayer.server.WebService" />
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="com.cw.videopal.refplayer.CastOptionsProvider"/>
