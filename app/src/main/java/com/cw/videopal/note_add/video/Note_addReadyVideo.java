@@ -101,6 +101,15 @@ public class Note_addReadyVideo extends Activity {
 		{
             setContentView(R.layout.note_add_prepare);
 
+			// take Persistable UriPermission for resolving path getting by Photo Picker tool
+			// example content://media/picker/0/com.android.providers.media.photopicker/media/1000001839
+//			if (Build.VERSION.SDK_INT >= 33) {
+//				if (resultCode == Activity.RESULT_OK) {
+//					int flag = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+//					this.getContentResolver().takePersistableUriPermission(imageReturnedIntent.getData(), flag);
+//				}
+//			}
+
 			// for ready picture
 			if(requestCode == Util.CHOOSER_SET_PICTURE)
 			{

@@ -19,7 +19,6 @@ package com.cw.videopal.util.video;
 import android.app.Activity;
 
 import com.cw.videopal.util.Util;
-import com.google.android.exoplayer2.Player;
 
 import java.io.File;
 import java.util.Locale;
@@ -39,8 +38,6 @@ public class UtilVideo {
 
 	UtilVideo()	{}
 	
-	public static Player exoPlayer;
-
     // check if file has video extension
     // refer to http://developer.android.com/intl/zh-tw/guide/appendix/media-formats.html
     public static boolean hasVideoExtension(File file){
@@ -98,9 +95,9 @@ public class UtilVideo {
 	}
 
 	// stop ExoPlayer
-	public static void stopExoPlayer(){
-		if( exoPlayer!=null && exoPlayer.isPlaying())
-			exoPlayer.stop();
-	}
+//	public static void stopExoPlayer(){
+//		if( exoPlayer!=null && exoPlayer.isPlaying())
+//			exoPlayer.stop();
+//	}
 }
 

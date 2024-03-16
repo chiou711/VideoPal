@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cw.videopal.note;
+package com.cw.videopal.note.player;
 
 import android.content.Context;
 import android.net.Uri;
 import android.view.KeyEvent;
 
 import com.cw.videopal.R;
-import com.cw.videopal.util.video.UtilVideo;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
@@ -42,10 +41,10 @@ import java.util.ArrayList;
 import androidx.core.content.res.ResourcesCompat;
 
 /** Manages players and an internal media queue for the demo app. */
-/* package */ class PlayerManager implements Player.Listener, SessionAvailabilityListener {
+/* package */ public class PlayerManager implements Player.Listener, SessionAvailabilityListener {
 
   /** Listener for events. */
-  interface Listener {
+  public interface Listener {
 
     /** Called when the currently played item of the media queue changes. */
     void onQueuePositionChanged(int previousIndex, int newIndex);
@@ -58,16 +57,16 @@ import androidx.core.content.res.ResourcesCompat;
     void onUnsupportedTrack(int trackType);
   }
 
-  private final Context context;
-  private final StyledPlayerView playerView;
-  private final Player localPlayer;
-  private final CastPlayer castPlayer;
-  private final ArrayList<MediaItem> mediaQueue;
-  private final Listener listener;
+  final Context context;
+  final StyledPlayerView playerView;
+  final Player localPlayer;
+  final CastPlayer castPlayer;
+  final ArrayList<MediaItem> mediaQueue;
+  final Listener listener;
 
-  private Tracks lastSeenTracks;
-  private int currentItemIndex;
-  Player currentPlayer;
+  Tracks lastSeenTracks;
+  int currentItemIndex;
+  public Player currentPlayer;
   String pictureUrl;
   String titleStr;
 
@@ -272,8 +271,6 @@ import androidx.core.content.res.ResourcesCompat;
     if (this.currentPlayer == currentPlayer) {
       return;
     }
-
-    UtilVideo.exoPlayer = this.currentPlayer;
 
     playerView.setPlayer(currentPlayer);
     playerView.setControllerHideOnTouch(currentPlayer == localPlayer);

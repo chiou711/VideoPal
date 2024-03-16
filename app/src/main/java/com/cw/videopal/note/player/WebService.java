@@ -1,9 +1,17 @@
-package com.cw.videopal.refplayer.server;
+package com.cw.videopal.note.player;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 
 import com.cw.videopal.page.PageAdapter_recycler;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import androidx.annotation.Nullable;
 import io.github.dkbai.tinyhttpd.nanohttpd.webserver.SimpleWebServer;
@@ -69,21 +77,35 @@ public class WebService extends  IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         String[] array = new String[]{"-h",
                 PageAdapter_recycler.deviceIpAddress,
+//                Note_cast2.deviceIpAddress,
                 "-p 8080",
                 "-d",
                 root_path
         };
         SimpleWebServer.runServer(
-//                arrayOf(
-//                        "-h",
-//                        LocalPlayerActivity.deviceIpAddress,
-//                        "-p 8080",
-//                        "-d",
-//                        Environment.getExternalStorageDirectory().getAbsolutePath()
-//                )
                 array
         );
-//        Log.d(TAG, "Service Started on ${LocalPlayerActivity.deviceIpAddress}:8080");
+    }
 
+    /**
+     * Making sure public utility methods remain static
+     */
+    public static String findIPAddress(Context context) {
+        WifiManager wifiManager = (WifiManager)
+                context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        try {
+            if (wifiManager.getConnectionInfo() != null) {
+                WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                return InetAddress.getByAddress(
+                        ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN)
+                                .putInt(wifiInfo.getIpAddress())
+                                .array()
+                ).getHostAddress();
+            } else
+                return null;
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

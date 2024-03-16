@@ -353,9 +353,17 @@ public class Note_edit_ui {
 			// picture Uri
 			String strPictureUriEdit = dB_page.getNotePictureUri_byId(rowId);
 
+			System.out.println("strPictureUriEdit 1 = " + strPictureUriEdit);
 			// get real path at local device storage
-			if(strPictureUriEdit.startsWith("content") )
+			if(strPictureUriEdit.startsWith("content") ){
 				strPictureUriEdit = Util.getLocalRealPathByUri(act,Uri.parse(strPictureUriEdit));
+
+				// can not get real path, still shows DB path
+//				if(strPictureUriEdit==null)
+//					strPictureUriEdit = dB_page.getNotePictureUri_byId(rowId);
+			}
+
+			System.out.println("strPictureUriEdit 2 = " + strPictureUriEdit);
 
 			pictureUriEditText.setText(strPictureUriEdit);
 			pictureUriEditText.setSelection(strPictureUriEdit.length());

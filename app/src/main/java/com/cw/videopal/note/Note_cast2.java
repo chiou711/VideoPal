@@ -36,18 +36,13 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.cw.videopal.R;
-import com.cw.videopal.db.DB_folder;
 import com.cw.videopal.db.DB_page;
 import com.cw.videopal.note.player.PlayerManager;
 import com.cw.videopal.note.player.WebService;
 import com.cw.videopal.operation.mail.MailNotes;
-import com.cw.videopal.page.PageAdapter_recycler;
-import com.cw.videopal.tabs.TabsHost;
 import com.cw.videopal.util.DeleteFileAlarmReceiver;
 import com.cw.videopal.util.Util;
 import com.cw.videopal.util.image.TouchImageView;
-import com.cw.videopal.util.image.UtilImage;
-import com.cw.videopal.util.preferences.Pref;
 import com.cw.videopal.util.uil.UilCommon;
 import com.cw.videopal.util.video.UtilVideo;
 import com.google.android.exoplayer2.C;
@@ -60,7 +55,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-public class Note_cast extends AppCompatActivity implements  PlayerManager.Listener{
+//import static com.cw.videopal.note.player.WebService.findIPAddress;
+
+public class Note_cast2 extends AppCompatActivity implements  PlayerManager.Listener{
 
     // DB
     public DB_page mDb_page;
@@ -78,6 +75,8 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 	public CastContext castContext;
 	public PlayerManager playerManager;
 	PlayerManager.Listener listener;
+
+	public static String deviceIpAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -102,15 +101,15 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 	    }
 
 		// set current selection
-		mEntryPosition = getIntent().getExtras().getInt("POSITION");
-		NoteUi.setFocus_notePos(mEntryPosition);
+//		mEntryPosition = getIntent().getExtras().getInt("POSITION");
+//		NoteUi.setFocus_notePos(mEntryPosition);
 
 		// init video
 		UtilVideo.mPlayVideoPosition = 0;   // not played yet
 		mPlayVideoPositionOfInstance = 0;
 
 		act = this;
-
+	    deviceIpAddress = WebService.findIPAddress(this);
 	} //onCreate end
 
 	// Add to prevent resizing full screen picture,
@@ -145,14 +144,14 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 		UilCommon.init();
 
 		// DB
-		DB_folder dbFolder = new DB_folder(act,Pref.getPref_focusView_folder_tableId(act));
-		mStyle = dbFolder.getPageStyle(TabsHost.getFocus_tabPos(), true);
+//		DB_folder dbFolder = new DB_folder(act, Pref.getPref_focusView_folder_tableId(act));
+//		mStyle = dbFolder.getPageStyle(TabsHost.getFocus_tabPos(), true);
 
-		mDb_page = new DB_page(act, TabsHost.getCurrentPageTableId());
+//		mDb_page = new DB_page(act, TabsHost.getCurrentPageTableId());
 
-		if(mDb_page != null) {
-			mNoteId = mDb_page.getNoteId(NoteUi.getFocus_notePos(), true);
-		}
+//		if(mDb_page != null) {
+//			mNoteId = mDb_page.getNoteId(NoteUi.getFocus_notePos(), true);
+//		}
 	}
 
 	public static int getStyle() {
@@ -185,27 +184,32 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
         // renew options menu
         act.invalidateOptionsMenu();
 
-		DB_page mDb_page = new DB_page(act, TabsHost.getCurrentPageTableId());
-		String pictureStr = mDb_page.getNotePictureUri(NoteUi.getFocus_notePos(),true);
-		String titleStr = mDb_page.getNoteTitle(NoteUi.getFocus_notePos(),true);
+//		DB_page mDb_page = new DB_page(act, TabsHost.getCurrentPageTableId());
+//		String pictureStr = mDb_page.getNotePictureUri(NoteUi.getFocus_notePos(),true);
+//		String titleStr = mDb_page.getNoteTitle(NoteUi.getFocus_notePos(),true);
 
-		if(UtilImage.hasImageExtension(pictureStr,act)) {
-			Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
-			setSupportActionBar(mToolbar);
-			if (getSupportActionBar() != null) {
-				getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-			}
-			showPictureView(pictureStr);
-		}
-		else if(UtilVideo.hasVideoExtension(pictureStr,act)) {
+//		if(UtilImage.hasImageExtension(pictureStr,act)) {
+//			Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
+//			setSupportActionBar(mToolbar);
+//			if (getSupportActionBar() != null) {
+//				getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//			}
+//			showPictureView(pictureStr);
+//		}
+//		else if(UtilVideo.hasVideoExtension(pictureStr,act)) {
+
+//		String pictureStr = "content://media/external/video/media/1000000766";
+
+//			System.out.println("--- pictureStr = " + pictureStr);
 			setContentView(R.layout.note_view_portrait_cast);
 			Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
 			setSupportActionBar(mToolbar);
 			if (getSupportActionBar() != null) {
 				getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 			}
-			exoPlayer_cast2(pictureStr, titleStr);
-		}
+//			exoPlayer_cast2(pictureStr, titleStr);
+			exoPlayer_cast2("", "");
+//		}
 	}
 
 
@@ -258,11 +262,8 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 
 		// stop exoPlayer
 //		UtilVideo.stopExoPlayer();
-		if( playerManager!= null &&
-			playerManager.currentPlayer!=null &&
-			playerManager.currentPlayer.isPlaying()) {
+		if( playerManager.currentPlayer!=null && playerManager.currentPlayer.isPlaying())
 			playerManager.currentPlayer.stop();
-		}
 
 		if (castContext == null) {
 			// Nothing to release.
@@ -433,6 +434,11 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 	// - device storage
 	// - SdCard
 	void exoPlayer_cast2(String pictureStr, String titleStr){
+		System.out.println("--- pictureStr = " + pictureStr);
+		titleStr = "testonly";
+		pictureStr ="content://media/external/video/media/1000000766";
+//		pictureStr = "/storage/emulated/0/sample.mp4";
+
 		// at local device storage
 		if(pictureStr.contains("file://"))
 			pictureStr = pictureStr.replace("file://","");
@@ -463,7 +469,8 @@ public class Note_cast extends AppCompatActivity implements  PlayerManager.Liste
 			// add http://device_IP:8080 prefix
 			if (pictureStr.contains(WebService.root_path)) {
 				pictureStr = pictureStr.replace(WebService.root_path, "");
-				pictureStr = "http://" + PageAdapter_recycler.deviceIpAddress + ":8080" + pictureStr;
+//				pictureStr = "http://" + PageAdapter_recycler.deviceIpAddress + ":8080" + pictureStr;
+				pictureStr = "http://" + deviceIpAddress + ":8080" + pictureStr;
 			}
 
 			// start web service

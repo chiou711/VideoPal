@@ -638,8 +638,10 @@ public class Util
 	
 	// get local real path from URI
 	public static String getLocalRealPathByUri(Context context, Uri contentUri) {
+
+		// original way
 		  Cursor cursor = null;
-		  try { 
+		  try {
 		    String[] proj = { MediaStore.Images.Media.DATA };
 		    cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
 		    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
@@ -647,13 +649,18 @@ public class Util
 		    return cursor.getString(column_index);
 		  }
 		  catch (Exception e){
-			return null;  
+			return null;
 		  }
 		  finally {
 		    if (cursor != null) {
 		      cursor.close();
 		    }
 		  }
+
+		// try
+//		FileUtils fileUtils = new FileUtils(context);
+//		return fileUtils.getPath(contentUri);
+
 	}
 	
 	// get display name by URI string

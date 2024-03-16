@@ -76,6 +76,7 @@
 <!--                <action android:name="android.intent.action.MEDIA_BUTTON" />-->
 <!--            </intent-filter>-->
 <!--        </activity>-->
+
         <activity android:name="com.cw.videopal.note.Note_cast"
             android:theme="@style/MyTheme"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
@@ -84,6 +85,7 @@
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </activity>
+
         <activity android:name="com.cw.videopal.note_add.pictureUri.Note_addPictureUri"
             android:theme="@style/MyTheme"
             android:windowSoftInputMode="adjustPan"
@@ -116,82 +118,10 @@
             android:name="com.cw.videopal.util.DeleteFileAlarmReceiver"
             android:enabled="true" />
 
-<!--        <meta-data-->
-<!--            android:name="com.google.android.gms.ads.APPLICATION_ID"-->
-<!--            android:value="@string/ad_mob_app_id"/>-->
-
-<!--            <meta-data-->
-<!--                android:name="com.google.android.gms.ads.APPLICATION_ID"-->
-<!--                android:value="@string/ad_mob_app_id_test"/>-->
-
-<!--        <meta-data-->
-<!--            android:name="com.google.android.gms.ads.AD_MANAGER_APP"-->
-<!--            android:value="true"/>-->
-
-        <activity
-            android:name="com.cw.videopal.refplayer.VideoBrowserActivity"
-            android:label="@string/app_name"
-            android:theme="@style/MyTheme"
-            android:exported="true">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN"/>-->
-<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
-<!--            </intent-filter>-->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="https" android:host="castvideos.com"
-                    android:path="/cast/join"/>
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.cw.videopal.refplayer.mediaplayer.LocalPlayerActivity"
-            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
-            android:label="@string/app_name"
-            android:launchMode="singleTask"
-            android:theme="@style/MyTheme"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.cw.videopal.refplayer.settings.CastPreference"
-            android:theme="@style/Theme.AppCompat"
-            android:label="@string/action_settings"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.cw.videopal.refplayer.queue.ui.QueueListViewActivity"
-            android:label="@string/queue_list"
-            android:screenOrientation="portrait"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.cw.videopal.refplayer.expandedcontrols.ExpandedControlsActivity"
-            android:label="@string/app_name"
-            android:launchMode="singleTask"
-            android:theme="@style/Theme.CastVideosDark"
-            android:screenOrientation="portrait"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.cw.videopal.refplayer.VideoBrowserActivity"/>
-        </activity>
-        <service android:name=".refplayer.server.WebService" />
+        <service android:name=".note.player.WebService" />
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
-            android:value="com.cw.videopal.refplayer.CastOptionsProvider"/>
+            android:value="com.cw.videopal.note.player.CastOptionsProvider"/>
 
         </application>
 

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package com.cw.videopal.refplayer;
+package com.cw.videopal.note.player;
 
 import android.content.Context;
 
 import com.cw.videopal.R;
-import com.cw.videopal.refplayer.expandedcontrols.ExpandedControlsActivity;
 import com.google.android.gms.cast.LaunchOptions;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.framework.CastOptions;
@@ -46,12 +45,12 @@ public class CastOptionsProvider implements OptionsProvider {
                 .setActions(Arrays.asList(MediaIntentReceiver.ACTION_SKIP_NEXT,
                         MediaIntentReceiver.ACTION_TOGGLE_PLAYBACK,
                         MediaIntentReceiver.ACTION_STOP_CASTING), new int[]{1, 2})
-                .setTargetActivityClassName(ExpandedControlsActivity.class.getName())
+//                .setTargetActivityClassName(ExpandedControlsActivity.class.getName())
                 .build();
         CastMediaOptions mediaOptions = new CastMediaOptions.Builder()
                 .setImagePicker(new ImagePickerImpl())
                 .setNotificationOptions(notificationOptions)
-                .setExpandedControllerActivityClassName(ExpandedControlsActivity.class.getName())
+//                .setExpandedControllerActivityClassName(ExpandedControlsActivity.class.getName())
                 .build();
         /** Following lines enable Cast Connect */
         LaunchOptions launchOptions = new LaunchOptions.Builder()

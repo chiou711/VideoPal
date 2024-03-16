@@ -39,7 +39,6 @@ import com.cw.videopal.note_edit.Note_edit;
 import com.cw.videopal.page.item_touch_helper.ItemTouchHelperAdapter;
 import com.cw.videopal.page.item_touch_helper.ItemTouchHelperViewHolder;
 import com.cw.videopal.page.item_touch_helper.OnStartDragListener;
-import com.cw.videopal.refplayer.utils.Utils;
 import com.cw.videopal.tabs.TabsHost;
 import com.cw.videopal.util.ColorSet;
 import com.cw.videopal.util.Util;
@@ -57,6 +56,7 @@ import static com.cw.videopal.db.DB_page.KEY_NOTE_CREATED;
 import static com.cw.videopal.db.DB_page.KEY_NOTE_MARKING;
 import static com.cw.videopal.db.DB_page.KEY_NOTE_PICTURE_URI;
 import static com.cw.videopal.db.DB_page.KEY_NOTE_TITLE;
+import static com.cw.videopal.note.player.WebService.findIPAddress;
 import static com.cw.videopal.page.Page_recycler.swapRows;
 
 // Pager adapter
@@ -83,7 +83,7 @@ public class PageAdapter_recycler extends RecyclerView.Adapter<PageAdapter_recyc
 
 		// ref: https://github.com/KaustubhPatange/Android-Cast-Local-Sample
 		// get IP address
-	    deviceIpAddress =  Utils.findIPAddress(mAct);
+	    deviceIpAddress =  findIPAddress(mAct);
 
         if (deviceIpAddress == null) {
             Toast.makeText(
@@ -336,6 +336,7 @@ public class PageAdapter_recycler extends RecyclerView.Adapter<PageAdapter_recyc
 
 	                //simple cast without pager
 	                intent = new Intent(mAct, Note_cast.class);
+//	                intent = new Intent(mAct, Note_cast2.class);
 
 	                intent.putExtra("POSITION", position);
                     mAct.startActivity(intent);
