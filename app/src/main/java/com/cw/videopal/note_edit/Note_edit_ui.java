@@ -359,8 +359,8 @@ public class Note_edit_ui {
 				strPictureUriEdit = Util.getLocalRealPathByUri(act,Uri.parse(strPictureUriEdit));
 
 				// can not get real path, still shows DB path
-//				if(strPictureUriEdit==null)
-//					strPictureUriEdit = dB_page.getNotePictureUri_byId(rowId);
+				if(strPictureUriEdit==null)
+					strPictureUriEdit = dB_page.getNotePictureUri_byId(rowId);
 			}
 
 			System.out.println("strPictureUriEdit 2 = " + strPictureUriEdit);

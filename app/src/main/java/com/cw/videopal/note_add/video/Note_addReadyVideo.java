@@ -103,6 +103,8 @@ public class Note_addReadyVideo extends Activity {
 
 			// take Persistable UriPermission for resolving path getting by Photo Picker tool
 			// example content://media/picker/0/com.android.providers.media.photopicker/media/1000001839
+			// good: can get video path
+			// bad: can not Cast, can not add to DB if not using photo picker
 //			if (Build.VERSION.SDK_INT >= 33) {
 //				if (resultCode == Activity.RESULT_OK) {
 //					int flag = Intent.FLAG_GRANT_READ_URI_PERMISSION;

@@ -658,6 +658,7 @@ public class Util
 		  }
 
 		// try
+		// bad: latch
 //		FileUtils fileUtils = new FileUtils(context);
 //		return fileUtils.getPath(contentUri);
 
