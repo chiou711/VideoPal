@@ -193,7 +193,8 @@ public class MainAct extends AppCompatActivity implements FragmentManager.OnBack
                         .setPositiveButton(R.string.confirm_dialog_button_yes, click_sample_Yes)
                         .setNegativeButton(R.string.confirm_dialog_button_no, click_sample_No);
                 builder.create().show();
-            }
+            } else
+                doCreate();
         }
         else if((Define.DEFAULT_CONTENT == Define.BY_INITIAL_TABLES) && (Define.INITIAL_FOLDERS_COUNT > 0))
         {
@@ -649,22 +650,9 @@ public class MainAct extends AppCompatActivity implements FragmentManager.OnBack
             if (FolderUi.mHandler != null)
                 FolderUi.mHandler.removeCallbacks(FolderUi.mTabsHostRun);
         }
-        // fix: home button failed after power off/on in Config fragment
         else {
-//		// fix: home button failed after power off/on in Config fragment
-//            if (bEULA_accepted) {
-	            if(mFragmentManager != null) {
+	            if(mFragmentManager != null)
                     mFragmentManager.popBackStack();
-                }
-
-//                if (!mAct.isDestroyed())
-                {
-                    System.out.println("MainAct / _onResumeFragments / mAct is not Destroyed()");
-                    doCreate();
-                }
-//                else
-//                    System.out.println("MainAct / _onResumeFragments / mAct is Destroyed()");
-//            }
         }
     }
 
@@ -775,11 +763,7 @@ public class MainAct extends AppCompatActivity implements FragmentManager.OnBack
             if(mFolder.adapter!=null)
                 mFolder.adapter.notifyDataSetChanged();
 
-//            configLayoutView();//improve Pause_Resume UI
-
-            // new drawer
-            drawer = new Drawer(this);
-            drawer.initDrawer();
+            configLayoutView();//improve Pause_Resume UI
 
             drawer.drawerToggle.syncState(); // make sure toggle icon state is correct
         }
