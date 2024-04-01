@@ -200,6 +200,8 @@ public class PageAdapter_recycler extends RecyclerView.Adapter<PageAdapter_recyc
         }
 	    mDb_page.close();
 
+//		System.out.println("--- pictureUri = " + pictureUri);
+
         /**
          *  control block
          */

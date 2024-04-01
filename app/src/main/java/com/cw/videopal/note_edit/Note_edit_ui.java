@@ -358,7 +358,7 @@ public class Note_edit_ui {
 			if(strPictureUriEdit.startsWith("content") ){
 				strPictureUriEdit = Util.getLocalRealPathByUri(act,Uri.parse(strPictureUriEdit));
 
-				// can not get real path, still shows DB path
+				// can not get real path, still shows DB path starts with content
 				if(strPictureUriEdit==null)
 					strPictureUriEdit = dB_page.getNotePictureUri_byId(rowId);
 			}

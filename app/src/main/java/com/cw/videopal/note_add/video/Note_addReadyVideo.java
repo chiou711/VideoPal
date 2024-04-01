@@ -97,43 +97,47 @@ public class Note_addReadyVideo extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) 
 	{
 		System.out.println("Note_addReadyVideo / onActivityResult");
-		if (resultCode == Activity.RESULT_OK)
-		{
+		if (resultCode == Activity.RESULT_OK) {
             setContentView(R.layout.note_add_prepare);
 
-			// take Persistable UriPermission for resolving path getting by Photo Picker tool
-			// example content://media/picker/0/com.android.providers.media.photopicker/media/1000001839
-			// good: can get video path
-			// bad: can not Cast, can not add to DB if not using photo picker
-//			if (Build.VERSION.SDK_INT >= 33) {
-//				if (resultCode == Activity.RESULT_OK) {
-//					int flag = Intent.FLAG_GRANT_READ_URI_PERMISSION;
-//					this.getContentResolver().takePersistableUriPermission(imageReturnedIntent.getData(), flag);
-//				}
-//			}
+			// for ready video
+			if(requestCode == Util.CHOOSER_SET_PICTURE){
+				Uri selectedUri = imageReturnedIntent.getData();
+				String authority = null;
+				if(selectedUri!=null)
+					authority = selectedUri.getAuthority();
 
-			// for ready picture
-			if(requestCode == Util.CHOOSER_SET_PICTURE)
-			{
-				Uri selectedUri = imageReturnedIntent.getData(); 
-				String authority = selectedUri.getAuthority();
+//				System.out.println("--- selectedUri = " + selectedUri);
+//				System.out.println("--- authority = " + authority);
+
 				// SAF support, take persistent Uri permission
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-				{
-			    	int takeFlags = imageReturnedIntent.getFlags()
-			                & (Intent.FLAG_GRANT_READ_URI_PERMISSION
-			                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+		        int takeFlags = imageReturnedIntent.getFlags()
+		                & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+		                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-					// add for solving inspection error
-					takeFlags |= Intent.FLAG_GRANT_READ_URI_PERMISSION;
+				// add for solving inspection error
+				takeFlags |= Intent.FLAG_GRANT_READ_URI_PERMISSION;
 
-			    	// Check for the freshest data.
-			    	if(authority.equalsIgnoreCase("com.google.android.apps.docs.storage") )
-			    	{
-			    		getContentResolver().takePersistableUriPermission(selectedUri, takeFlags);
-			    	}
-				}				
-				
+				if(authority!= null) {
+					if( // Check for the freshest data.
+						authority
+						.equalsIgnoreCase("com.google.android.apps.docs.storage") ||
+						// for photo picker
+						// take Persistable UriPermission for resolving path getting by Photo Picker tool
+						// example content://media/picker/0/com.android.providers.media.photopicker/media/1000001839
+						// good:
+						//  - can get video path
+						//  - can play on the phone
+						//  - can add path to DB when using photo picker
+						// bad:
+						//  - current issue: can not Cast
+						((Build.VERSION.SDK_INT >= 33) &&
+						  selectedUri.getPath().contains("photopicker") &&
+						  authority.equalsIgnoreCase("media"))  ){
+							getContentResolver().takePersistableUriPermission(selectedUri, takeFlags);
+					}
+				}
+
 				String scheme = selectedUri.getScheme();
 				// check option of Add multiple
 				String option = getIntent().getExtras().getString("EXTRA_ADD_EXIST", "single_to_bottom");
