@@ -338,8 +338,6 @@ public class PageAdapter_recycler extends RecyclerView.Adapter<PageAdapter_recyc
 
 	                //simple cast without pager
 	                intent = new Intent(mAct, Note_cast.class);
-//	                intent = new Intent(mAct, Note_cast2.class);
-
 	                intent.putExtra("POSITION", position);
                     mAct.startActivity(intent);
 

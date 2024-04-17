@@ -20,7 +20,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -103,61 +102,26 @@ public class Note_addReadyVideo extends Activity {
 			// for ready video
 			if(requestCode == Util.CHOOSER_SET_PICTURE){
 				Uri selectedUri = imageReturnedIntent.getData();
-				String authority = null;
-				if(selectedUri!=null)
-					authority = selectedUri.getAuthority();
-
-//				System.out.println("--- selectedUri = " + selectedUri);
-//				System.out.println("--- authority = " + authority);
-
-				// SAF support, take persistent Uri permission
-		        int takeFlags = imageReturnedIntent.getFlags()
-		                & (Intent.FLAG_GRANT_READ_URI_PERMISSION
-		                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
-				// add for solving inspection error
-				takeFlags |= Intent.FLAG_GRANT_READ_URI_PERMISSION;
-
-				if(authority!= null) {
-					if( // Check for the freshest data.
-						authority
-						.equalsIgnoreCase("com.google.android.apps.docs.storage") ||
-						// for photo picker
-						// take Persistable UriPermission for resolving path getting by Photo Picker tool
-						// example content://media/picker/0/com.android.providers.media.photopicker/media/1000001839
-						// good:
-						//  - can get video path
-						//  - can play on the phone
-						//  - can add path to DB when using photo picker
-						// bad:
-						//  - current issue: can not Cast
-						((Build.VERSION.SDK_INT >= 33) &&
-						  selectedUri.getPath().contains("photopicker") &&
-						  authority.equalsIgnoreCase("media"))  ){
-							getContentResolver().takePersistableUriPermission(selectedUri, takeFlags);
-					}
-				}
-
 				String scheme = selectedUri.getScheme();
+
 				// check option of Add multiple
+				String uriStr = Util.getVideoPathOnActivityResult(this, imageReturnedIntent);
 				String option = getIntent().getExtras().getString("EXTRA_ADD_EXIST", "single_to_bottom");
      			
 				// add single file
 				if(option.equalsIgnoreCase("single_to_top") || 
-           		   option.equalsIgnoreCase("single_to_bottom")	)
-				{
-					String uriStr = selectedUri.toString();
+           		   option.equalsIgnoreCase("single_to_bottom")	){
+					System.out.println("Note_addReadyVideo / onActivityResult / uriStr = " + uriStr);
+
 		  		    rowId = null; // set null for Insert
 		        	rowId = savePictureStateInDB(rowId,uriStr);
 		        	
 		        	if( (dB_page.getNotesCount(true) > 0) &&
-		        		option.equalsIgnoreCase("single_to_top"))
-		        	{
+		        		option.equalsIgnoreCase("single_to_top")){
 		        		Page_recycler.swapTopBottom();
 		        	}
 		        	
-		        	if(!Util.isEmptyString(uriStr))	
-		        	{
+		        	if(!Util.isEmptyString(uriStr)){
 		                String name = Util.getDisplayNameByUriString(uriStr, this);
 		        		Util.showSavedFileToast(name,this);
 		        	}
@@ -166,8 +130,7 @@ public class Note_addReadyVideo extends Activity {
 				else if((option.equalsIgnoreCase("directory_to_top") || 
 						 option.equalsIgnoreCase("directory_to_bottom")) &&
 						 (scheme.equalsIgnoreCase("file") ||
-						  scheme.equalsIgnoreCase("content") )              )
-				{
+						  scheme.equalsIgnoreCase("content") )              ){
 					String realPath = Util.getLocalRealPathByUri(this, selectedUri);
 					if(realPath != null)
 					{
@@ -181,13 +144,10 @@ public class Note_addReadyVideo extends Activity {
 						
 						// get Urls array
 						String[] urlsArray = Util.getUrlsByFiles(dir.listFiles(),Util.VIDEO);
-						if(urlsArray == null)
-						{
+						if(urlsArray == null){
 							Toast.makeText(this,"No file is found",Toast.LENGTH_SHORT).show();
 							finish();
-						}
-                        else
-                        {
+						} else {
                             // show Start
                             Toast.makeText(this, R.string.add_new_start, Toast.LENGTH_SHORT).show();
                         }
@@ -195,47 +155,37 @@ public class Note_addReadyVideo extends Activity {
 						int i= 1;
 						int total=0;
 						
-						for(int cnt = 0; cnt < urlsArray.length; cnt++)
-						{
+						for(int cnt = 0; cnt < urlsArray.length; cnt++){
 							if(!Util.isEmptyString(urlsArray[cnt]))
 								total++;
 						}
 						
 						// note: the order add insert items depends on file manager 
-						for(String urlStr:urlsArray)
-						{
+						for(String urlStr:urlsArray){
 							System.out.println("urlStr = " + urlStr);
 				  		    rowId = null; // set null for Insert
 				  		    if(!Util.isEmptyString(urlStr))
 				  		    	rowId = savePictureStateInDB(rowId,urlStr);
 				        	
 				        	if( (dB_page.getNotesCount(true) > 0) &&
-	  		        			option.equalsIgnoreCase("directory_to_top") ) 
-				        	{
+	  		        			option.equalsIgnoreCase("directory_to_top") ) {
 				        		Page_recycler.swapTopBottom();
 				        	}
-				    		
 				        	i++;
 						}
 
                         // show Stop
                         Toast.makeText(this,R.string.add_new_stop,Toast.LENGTH_SHORT).show();
-					}
-					else
-					{
+					} else {
 						Toast.makeText(this,
 								R.string.add_new_file_error,
 								Toast.LENGTH_LONG)
 								.show();					
 					}	
 				}
-				
-//				addPicture();
 				finish();
 			}
-		} 
-		else if (resultCode == RESULT_CANCELED)
-		{
+		} else if (resultCode == RESULT_CANCELED)	{
 	        // hide action bar
 			if(getActionBar() != null)
 				getActionBar().hide();

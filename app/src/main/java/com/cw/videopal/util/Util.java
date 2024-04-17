@@ -1386,45 +1386,44 @@ public class Util
 		System.out.println("Util / _getPicturePathOnActivityResult / selectedUri = " + selectedUri.toString());
 
 		// SAF support, take persistent Uri permission
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+		// Check for the freshest data.
+		// for Google drive
+		String authority = selectedUri.getAuthority();
+		System.out.println("--- authority = " + authority);
+		if(authority.equalsIgnoreCase("com.google.android.apps.docs.storage") )
 		{
-			// Check for the freshest data.
-			// for Google drive
-			String authority = selectedUri.getAuthority();
-			if(authority.equalsIgnoreCase("com.google.android.apps.docs.storage") )
-			{
-				int takeFlags = returnedIntent.getFlags()
-						& (Intent.FLAG_GRANT_READ_URI_PERMISSION
-						| Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+			int takeFlags = returnedIntent.getFlags()
+					& (Intent.FLAG_GRANT_READ_URI_PERMISSION
+					| Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-				// add for solving inspection error
-				takeFlags |= Intent.FLAG_GRANT_READ_URI_PERMISSION;
+			// add for solving inspection error
+			takeFlags |= Intent.FLAG_GRANT_READ_URI_PERMISSION;
 
-				act.getContentResolver().takePersistableUriPermission(selectedUri, takeFlags);
-			}
-			// for Google Photos
-			else if(authority.equalsIgnoreCase("com.google.android.apps.photos.contentprovider") )
+			act.getContentResolver().takePersistableUriPermission(selectedUri, takeFlags);
+		}
+		// for Google Photos
+		else if(authority.equalsIgnoreCase("com.google.android.apps.photos.contentprovider") )
+		{
+			InputStream is = null;
+			try
 			{
-				InputStream is = null;
-				try
-				{
-					is = act.getContentResolver().openInputStream(selectedUri);
-					Bitmap bmp = BitmapFactory.decodeStream(is);
-					ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-					bmp.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-					String path = MediaStore.Images.Media.insertImage(act.getContentResolver(), bmp, "Title", null);
-					selectedUri = Uri.parse(path);
-				} catch (FileNotFoundException e) {
+				is = act.getContentResolver().openInputStream(selectedUri);
+				Bitmap bmp = BitmapFactory.decodeStream(is);
+				ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+				bmp.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+				String path = MediaStore.Images.Media.insertImage(act.getContentResolver(), bmp, "Title", null);
+				selectedUri = Uri.parse(path);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}finally {
+				try {
+					is.close();
+				} catch (IOException e) {
 					e.printStackTrace();
-				}finally {
-					try {
-						is.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
 				}
 			}
 		}
+
 		String pictureUri;
 		String realPath = Util.getLocalRealPathByUri(act, selectedUri);
 
@@ -1433,8 +1432,77 @@ public class Util
 		else
 			pictureUri = selectedUri.toString(); // remote
 
+		System.out.println("--- pictureUri = " + pictureUri);
 		return pictureUri;
 	}
+
+	// Get video path on activity result
+	public static String getVideoPathOnActivityResult(Activity act, Intent returnedIntent){
+		Uri selectedUri = returnedIntent.getData();
+		System.out.println("Util / _getVideoPathOnActivityResult / selectedUri = " + selectedUri.toString());
+
+		// SAF support, take persistent Uri permission
+		// Check for the freshest data.
+		// for Google drive
+		String authority = selectedUri.getAuthority();
+		System.out.println("--- authority = " + authority);
+		if(authority.equalsIgnoreCase("com.google.android.apps.docs.storage") ||
+				// for photo picker
+				// take Persistable UriPermission for resolving path getting by Photo Picker tool
+				// example content://media/picker/0/com.android.providers.media.photopicker/media/1000001839
+				// good:
+				//  - can get video path
+				//  - can play on the phone
+				//  - can add path to DB when using photo picker
+				// bad:
+				//  - current issue: can not Cast
+				((Build.VERSION.SDK_INT >= 33) &&
+						selectedUri.getPath().contains("photopicker") &&
+						authority.equalsIgnoreCase("media"))  ){
+			int takeFlags = returnedIntent.getFlags()
+					& (Intent.FLAG_GRANT_READ_URI_PERMISSION
+					| Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+			// add for solving inspection error
+			takeFlags |= Intent.FLAG_GRANT_READ_URI_PERMISSION;
+
+			act.getContentResolver().takePersistableUriPermission(selectedUri, takeFlags);
+		}
+		// for Google Photos
+//		else if(authority.equalsIgnoreCase("com.google.android.apps.photos.contentprovider") )
+//		{
+//			InputStream is = null;
+//			try
+//			{
+//				is = act.getContentResolver().openInputStream(selectedUri);
+//				Bitmap bmp = BitmapFactory.decodeStream(is);
+//				ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+//				bmp.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+//				String path = MediaStore.Images.Media.insertImage(act.getContentResolver(), bmp, "Title", null);
+//				selectedUri = Uri.parse(path);
+//			} catch (FileNotFoundException e) {
+//				e.printStackTrace();
+//			}finally {
+//				try {
+//					is.close();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+
+		String videoUri;
+		String realPath = Util.getLocalRealPathByUri(act, selectedUri);
+
+		if(realPath != null)
+			videoUri = "file://".concat(realPath); // local
+		else
+			videoUri = selectedUri.toString(); // remote
+
+		System.out.println("--- videoUri = " + videoUri);
+		return videoUri;
+	}
+
 
 	// get Google drive file ID
 	// original:

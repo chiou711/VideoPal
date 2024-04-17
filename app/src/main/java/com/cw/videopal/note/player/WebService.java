@@ -77,7 +77,6 @@ public class WebService extends  IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         String[] array = new String[]{"-h",
                 PageAdapter_recycler.deviceIpAddress,
-//                Note_cast2.deviceIpAddress,
                 "-p 8080",
                 "-d",
                 root_path

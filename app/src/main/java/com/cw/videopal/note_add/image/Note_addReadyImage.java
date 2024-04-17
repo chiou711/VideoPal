@@ -16,29 +16,27 @@
 
 package com.cw.videopal.note_add.image;
 
-import java.io.File;
-
-import com.cw.videopal.page.Page_recycler;
-import com.cw.videopal.R;
-import com.cw.videopal.db.DB_page;
-import com.cw.videopal.tabs.TabsHost;
-import com.cw.videopal.util.Util;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.cw.videopal.R;
+import com.cw.videopal.db.DB_page;
+import com.cw.videopal.page.Page_recycler;
+import com.cw.videopal.tabs.TabsHost;
+import com.cw.videopal.util.Util;
+
+import java.io.File;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class Note_addReadyImage extends AppCompatActivity {
 
     Long rowId;
-    TextView progress;
 	private DB_page dB_page;
 
 	@Override
@@ -108,15 +106,15 @@ public class Note_addReadyImage extends AppCompatActivity {
 			if (requestCode == Util.CHOOSER_SET_PICTURE) {
 				Uri selectedUri = imageReturnedIntent.getData();
 				String scheme = selectedUri.getScheme();
-				// check option of Add multiple
 
 				String uriStr = Util.getPicturePathOnActivityResult(this, imageReturnedIntent);
+
+				// check option of Add multiple
 				String option = getIntent().getExtras().getString("EXTRA_ADD_EXIST", "single_to_bottom");
 
 				// add single file
 				if (option.equalsIgnoreCase("single_to_top") ||
-					option.equalsIgnoreCase("single_to_bottom"))
-				{
+					option.equalsIgnoreCase("single_to_bottom"))	{
 					System.out.println("Note_addReadyImage / onActivityResult / uriStr = " + uriStr);
 					rowId = null; // set null for Insert
 					rowId = savePictureStateInDB(rowId, uriStr);
@@ -135,8 +133,7 @@ public class Note_addReadyImage extends AppCompatActivity {
 				else if ((option.equalsIgnoreCase("directory_to_top") ||
 						option.equalsIgnoreCase("directory_to_bottom")) &&
 						(scheme.equalsIgnoreCase("file") ||
-						 scheme.equalsIgnoreCase("content") )  )
-				{
+						 scheme.equalsIgnoreCase("content") )  )	{
 					String realPath = Util.getLocalRealPathByUri(this, selectedUri);
 					if (realPath != null) {
 						// get file name
@@ -177,13 +174,6 @@ public class Note_addReadyImage extends AppCompatActivity {
 								Page_recycler.swapTopBottom();
 							}
 
-							// avoid showing empty toast
-							if (!Util.isEmptyString(urlStr)) {
-								String name = Util.getDisplayNameByUriString(urlStr, Note_addReadyImage.this);
-								name = i + "/" + total + ": " + name;
-//				        		Util.showSavedFileToast(name,this);
-								progress.append("\r\n" + name);
-							}
 							i++;
 						}
 
@@ -196,10 +186,7 @@ public class Note_addReadyImage extends AppCompatActivity {
 								.show();
 					}
 				}
-
-//				addPicture();
 				finish();
-
 			}
 		} else if (resultCode == RESULT_CANCELED) {
 			// hide action bar
